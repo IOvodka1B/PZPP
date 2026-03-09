@@ -7,7 +7,11 @@ export default withAuth(
     const path = req.nextUrl.pathname;
 
     // 1. Jeśli ktoś próbuje wejść do Panelu Kreatora (Dashboard)
-    if (path.startsWith("/dashboard") && token?.role !== "KREATOR" && token?.role !== "ADMIN") {
+    if (
+      path.startsWith("/dashboard") &&
+      token?.role !== "KREATOR" &&
+      token?.role !== "ADMIN"
+    ) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
@@ -27,7 +31,7 @@ export default withAuth(
 // KROK 3: Konfiguracja - które ścieżki ma sprawdzać bramkarz?
 export const config = {
   matcher: [
-    "/dashboard/:path*", 
+    "/dashboard/:path*",
     "/student/:path*",
     // Tu dodaj inne chronione ścieżki
   ],
