@@ -31,16 +31,21 @@ export async function createLead(formData) {
     });
 
     // Odświeżenie danych w cache, aby tabela CRM zaktualizowała się automatycznie
-    revalidatePath("/crm"); 
+    revalidatePath("/crm");
     return { success: true, lead: newLead };
-    
   } catch (error) {
     // Prisma zwraca błąd P2002 przy naruszeniu unikalności (np. powtórzony e-mail)
-    if (error.code === 'P2002') {
-      return { success: false, error: "Lead z tym adresem e-mail już istnieje w naszej bazie." };
+    if (error.code === "P2002") {
+      return {
+        success: false,
+        error: "Lead z tym adresem e-mail już istnieje w naszej bazie.",
+      };
     }
     console.error(error);
-    return { success: false, error: "Wystąpił błąd serwera. Spróbuj ponownie." };
+    return {
+      success: false,
+      error: "Wystąpił błąd serwera. Spróbuj ponownie.",
+    };
   }
 }
 
@@ -48,7 +53,7 @@ export async function createLead(formData) {
 export async function getLeads() {
   try {
     return await prisma.lead.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   } catch (error) {
     return [];
