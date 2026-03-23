@@ -65,12 +65,23 @@ export default function KanbanBoard() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-muted-foreground">Ladowanie tablicy Kanban...</p>;
+    return (
+      <p className="rounded-xl border border-emerald-100 bg-emerald-50/60 px-4 py-3 text-sm text-emerald-900/70">
+        Ladowanie tablicy Kanban...
+      </p>
+    );
   }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4 shadow-sm backdrop-blur-sm lg:p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-slate-900">Pipeline sprzedazy</h2>
+          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+            {leads.length} leadow
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {KANBAN_COLUMNS.map((column) => (
           <KanbanColumn
             key={column.status}
@@ -79,6 +90,7 @@ export default function KanbanBoard() {
             leads={leads.filter((lead) => lead.status === column.status)}
           />
         ))}
+        </div>
       </div>
     </DragDropContext>
   );

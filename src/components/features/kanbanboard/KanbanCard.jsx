@@ -20,13 +20,14 @@ export default function KanbanCard({ lead, index }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`rounded-lg border bg-card p-3 text-card-foreground shadow-xs transition ${
-            snapshot.isDragging ? "ring-2 ring-primary/30" : ""
+          style={provided.draggableProps.style}
+          className={`rounded-xl border border-white/80 bg-white/95 p-3.5 text-slate-900 shadow-sm transition ${
+            snapshot.isDragging ? "scale-[1.01] ring-2 ring-emerald-300/70 shadow-md" : ""
           }`}
         >
-          <h3 className="font-medium">{fullName || "Bez imienia"}</h3>
-          <p className="text-sm text-muted-foreground">{lead.email}</p>
-          <p className="mt-2 text-xs text-muted-foreground">
+          <h3 className="font-semibold text-slate-900">{fullName || "Bez imienia"}</h3>
+          <p className="mt-1 text-sm text-slate-600">{lead.email}</p>
+          <p className="mt-2 text-xs font-medium uppercase tracking-wide text-emerald-700/80">
             Zrodlo: {lead.source || "Nieznane"}
           </p>
         </article>
