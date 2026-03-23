@@ -8,7 +8,7 @@ import KanbanColumn from "./KanbanColumn";
 const KANBAN_COLUMNS = [
   { status: "NEW", title: "Nowe" },
   { status: "CONTACTED", title: "W trakcie uzgadniania" },
-  { status: "WON", title: "Kupione" },
+  { status: "WON", title: "Sprzedane" },
 ];
 
 // Zwraca nowa tablice leadow po poprawnym przeniesieniu karty.
@@ -76,7 +76,7 @@ export default function KanbanBoard() {
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm lg:p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-900">Pipeline sprzedazy</h2>
+          <h2 className="text-base font-semibold text-slate-900">Pipeline sprzedaży</h2>
           <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
             {leads.length} leadow
           </span>
