@@ -21,8 +21,8 @@ export default function KanbanCard({ lead, index }) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           style={provided.draggableProps.style}
-          className={`rounded-xl border border-white/80 bg-white/95 p-3.5 text-slate-900 shadow-sm transition ${
-            snapshot.isDragging ? "scale-[1.01] ring-2 ring-emerald-300/70 shadow-md" : ""
+          className={`rounded-xl border border-white/80 bg-white/95 p-3.5 text-slate-900 shadow-sm transition-shadow ${
+            snapshot.isDragging ? "ring-2 ring-emerald-300/70 shadow-md" : ""
           }`}
         >
           <h3 className="font-semibold text-slate-900">{fullName || "Bez imienia"}</h3>
