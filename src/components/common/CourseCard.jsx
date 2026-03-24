@@ -22,7 +22,9 @@ export default function CourseCard({ course, onOpenCourse }) {
             {course.lessonsCount} lekcji
           </p>
           <h3 className="text-base font-semibold leading-snug text-[#0f172a]">{course.title}</h3>
-          <p className="text-sm text-[#0f172a]">{course.description}</p>
+          <p className="text-sm text-[#0f172a]">
+            {course.description?.trim() ? course.description : 'Brak opisu.'}
+          </p>
         </CardContent>
         <CardFooter className="px-3 pb-3 pt-0">
           <Button
