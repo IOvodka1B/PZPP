@@ -2,8 +2,14 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import grapesjs from "grapesjs";
-//import "grapesjs/dist/css/grapes.min.css"; // Główne style edytora
-import grapesjsWebpage from "grapesjs-preset-webpage"; // Gotowe bloki (drag & drop)
+// Domyślny preset (używamy do ładowania stylów)
+import grapesjsWebpage from "grapesjs-preset-webpage";
+// Dodatkowe, zaawansowane wtyczki
+import grapesjsTabs from "grapesjs-tabs";
+import grapesjsCustomCode from "grapesjs-custom-code";
+import grapesjsTyped from "grapesjs-typed";
+import grapesjsTooltip from "grapesjs-tooltip";
+
 import { saveLandingPage } from "src/app/actions/landingPageActions";
 
 export default function GrapesEditor() {
@@ -12,27 +18,88 @@ export default function GrapesEditor() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    // Inicjalizacja GrapesJS tylko po stronie klienta (w przeglądarce)
     if (!editorRef.current) {
+      // Rozpakowujemy funkcje wtyczek, ignorując "opakowanie" .default przez Webpack
+      const pWebpage = grapesjsWebpage.default || grapesjsWebpage;
+      const pTabs = grapesjsTabs.default || grapesjsTabs;
+      const pCustomCode = grapesjsCustomCode.default || grapesjsCustomCode;
+      const pTyped = grapesjsTyped.default || grapesjsTyped;
+      const pTooltip = grapesjsTooltip.default || grapesjsTooltip;
+
       const editor = grapesjs.init({
-        container: "#gjs", // ID diva, w którym ma się wyrenderować edytor
+        container: "#gjs",
         height: "85vh",
         width: "100%",
-        storageManager: false, // Wyłączamy local storage, bo zapisujemy do bazy PostgreSQL
-        plugins: [grapesjsWebpage],
+        fromElement: true,
+        storageManager: false,
+        
+        // 1. Podajemy zaimportowane wtyczki
+        plugins: [
+          pWebpage,
+          pTabs,
+          pCustomCode,
+          pTyped,
+          pTooltip
+        ],
+        
+        // 2. JAWNA KONFIGURACJA DLA EFEKTU "DEMOVILLE"
+        // Konfiguracja Style Managera (prawa kolumna)
+        styleManager: {
+          sectors: [
+            {
+              name: "General",
+              open: true,
+              buildProps: ["float", "display", "position", "top", "right", "bottom", "left", "width", "height", "max-width", "min-height", "margin", "padding"],
+            },
+            {
+              name: "Flex",
+              open: false,
+              buildProps: ["flex-direction", "flex-wrap", "justify-content", "align-items", "align-content", "order", "flex-basis", "flex-grow", "flex-shrink", "align-self"],
+            },
+            {
+              name: "Typography",
+              open: false,
+              buildProps: ["font-family", "font-size", "font-weight", "letter-spacing", "color", "line-height", "text-align", "text-shadow"],
+            },
+            {
+              name: "Decorations",
+              open: false,
+              buildProps: ["border-collapse", "border-spacing", "background-color", "border-radius", "border", "background", "box-shadow"],
+            },
+            {
+              name: "Extra",
+              open: false,
+              buildProps: ["opacity", "transition", "transform", "z-index"],
+            },
+          ],
+        },
+
+        // Konfiguracja Opcji dla Wtyczek (aby jawniewstrzyknąć bloki i kategorie)
         pluginsOpts: {
-          [grapesjsWebpage]: {
-            // Konfiguracja bloków
+          [pWebpage]: {
+            // Jawnie włączamy potężne bloki Flexbox Columns
             blocksBasicOpts: { flexGrid: true },
+            // Jawnie włączamy CAŁĄ kategorię Formularzy (Forms)
+            formsOpts: true,
+            // Navbar i countdown
+            navbarOpts: true,
+            countdownOpts: true,
           },
+          // Dodatkowe wtyczki same wstrzykują bloki do kategorii "Extra"
+          [pTabs]: {},
+          [pCustomCode]: {},
+          [pTyped]: {},
+          [pTooltip]: {}
         },
       });
 
       setEditorInstance(editor);
       editorRef.current = editor;
+
+      // Opcjonalnie: Ustawiamy domyślny język UI na polski (jeśli GrapesJS go załaduje)
+      // editor.I18n.setLocale('pl');
     }
 
-    // Czyszczenie instancji przy odmontowaniu komponentu
     return () => {
       if (editorRef.current) {
         editorRef.current.destroy();
@@ -41,7 +108,6 @@ export default function GrapesEditor() {
     };
   }, []);
 
-  // Funkcja wyciągająca HTML i CSS z edytora i wysyłająca do naszej Server Action
   const handleSave = async () => {
     if (!editorInstance) return;
     setIsSaving(true);
@@ -49,16 +115,15 @@ export default function GrapesEditor() {
     const htmlData = editorInstance.getHtml();
     const cssData = editorInstance.getCss();
 
-    // W domyślnej wersji generujemy losowy slug, ale docelowo możecie tu dodać inputy dla użytkownika
     const result = await saveLandingPage({
-      title: "Moja nowa strona z buildera",
-      slug: `promo-${Math.floor(Math.random() * 10000)}`,
+      title: "PZPP Zaawansowana Kampania",
+      slug: `promo-studio-${Math.floor(Math.random() * 10000)}`,
       htmlData,
       cssData,
     });
 
     if (result.success) {
-      alert("Strona została pomyślnie zapisana w bazie!");
+      alert("Landing Page pomyślnie zapisany w bazie PZPP!");
     } else {
       alert(result.error);
     }
@@ -67,26 +132,28 @@ export default function GrapesEditor() {
   };
 
   return (
-    <div className="flex flex-col w-full border border-gray-300 rounded-lg overflow-hidden shadow-lg">
-      
-      {/* pobiera style bezpośrednio omijając kompilator Next.js */}
+    <div className="flex flex-col w-full border border-gray-300 rounded-lg overflow-hidden shadow-2xl bg-white min-h-[90vh]">
+      {/* ⚠️ Workaround z Turn 13 - dociągamy style kreatora z ominięciem Next.js ⚠️ */}
       <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" />
+      {/* FontAwesome dla piktogramów */}
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
       
-      <div className="bg-gray-800 p-3 flex justify-between items-center text-white">
-        <h2 className="font-bold">Kreator Landing Page (GrapesJS)</h2>
+      {/* Nasz własny pasek PZPP do zapisu na serwerze (zielony) */}
+      <div className="bg-gray-800 p-3 flex justify-between items-center text-white z-50 relative border-b border-gray-700">
+        <h2 className="font-bold">Kreator Landing Page PZPP</h2>
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded font-bold transition disabled:opacity-50"
+          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg font-bold transition disabled:opacity-50"
         >
-          {isSaving ? "Zapisywanie..." : "💾 Zapisz Stronę"}
+          {isSaving ? "Zapisywanie w bazie..." : "💾 Zapisz Stronę w Bazie PZPP"}
         </button>
       </div>
       
-      {/* Tutaj GrapesJS "wstrzyknie" swój interfejs drag&drop */}
-      <div id="gjs">
-        <h1>Witaj w kreatorze!</h1>
-        <p>Przeciągnij elementy z prawego paska, aby zbudować swoją stronę.</p>
+      {/* Czysty kontener, w którym GrapesJS samodzielnie wybuduje swój pełny interfejs Demoville */}
+      <div id="gjs" className="gjs-editor-cont">
+        <h1>PZPP GrapesJS Frankenstein</h1>
+        <p>Przeciągnij bloki z prawego panelu. Powinieneś mieć tu teraz wszystko (Section, Columns, Forms)!</p>
       </div>
     </div>
   );
