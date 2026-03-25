@@ -131,13 +131,10 @@ function CalendarToolbar(toolbarProps) {
   );
 }
 
-/**
- * Client component: tygodniowy planer spotkań z tworzeniem/edycją przez dialogi.
- */
 export default function CalendarBoard({ className }) {
   const initialDate = useMemo(() => new Date(), []);
 
-  // Controlled date, so możemy nawigować także "przewijaniem" po tygodniach.
+  
   const [controlledDate, setControlledDate] = useState(initialDate);
 
   const [range, setRange] = useState(() => ({
@@ -179,28 +176,10 @@ export default function CalendarBoard({ className }) {
         .replace(/\s+/g, " ")
         .trim();
 
-      const start = event?.start instanceof Date ? event.start : null;
-      const end = event?.end instanceof Date ? event.end : null;
-
-      const timeLabel =
-        start && end
-          ? `${format(start, "HH:mm", { locale: plLocale })} - ${format(
-              end,
-              "HH:mm",
-              { locale: plLocale }
-            )}`
-          : "";
-
       return (
         <div className="flex h-full w-full">
-          <div className="flex h-full w-full flex-col items-start justify-start gap-1 overflow-hidden rounded-sm border border-primary/20 bg-background px-2 py-1 shadow-sm transition-shadow hover:shadow-md dark:bg-zinc-950">
-            {timeLabel ? (
-              <div className="text-left text-[11px] font-semibold leading-none text-primary">
-                {timeLabel}
-              </div>
-            ) : null}
-
-            <div className="min-w-0 truncate text-left text-[13px] font-semibold leading-tight text-foreground">
+          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-lg border border-primary/20 bg-accent px-2 py-1 text-foreground shadow-sm">
+            <div className="min-w-0 truncate text-center text-[12px] font-semibold leading-none">
               {normalizedTitle || title}
             </div>
           </div>
@@ -209,7 +188,6 @@ export default function CalendarBoard({ className }) {
     };
   }, []);
 
-  // react-big-calendar: przekazujemy kafelek eventu jako komponent do `components`.
   const components = useMemo(() => ({ event: CustomEvent }), [CustomEvent]);
 
   // Formularz tworzenia spotkania
@@ -226,8 +204,6 @@ export default function CalendarBoard({ className }) {
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
 
-      // Interpretuje tylko "horyzontalne" przewijanie (lub Shift+wheel),
-      // żeby nie blokować scrolla po osiach czasu.
       const wantsDateNavigation =
         e?.shiftKey || (absX >= 30 && absX >= absY);
 
@@ -239,12 +215,10 @@ export default function CalendarBoard({ className }) {
 
       e.preventDefault?.();
 
-      // Shift+wheel: mapujemy kierunek z deltaY.
       const dir =
         deltaX !== 0 ? Math.sign(deltaX) : e?.shiftKey ? -Math.sign(deltaY) : 0;
       if (!dir) return;
 
-      // trackpad: deltaX>0 => następny tydzień
       setControlledDate((d) => addWeeks(d, dir > 0 ? 1 : -1));
     },
     [wheelLockRef]
@@ -311,8 +285,6 @@ export default function CalendarBoard({ className }) {
   }, [controlledDate]);
 
   const openCreateDialog = useCallback(() => {
-    // Jeśli użytkownik wcześniej kliknął slot - prefillujemy z niego dzień i godziny.
-    // Jeśli nie - nie zakładamy ram czasowych "tak o" (pola godzin zostaną puste).
     const baseDay = slotStart
       ? new Date(slotStart.getFullYear(), slotStart.getMonth(), slotStart.getDate())
       : new Date(
@@ -450,8 +422,7 @@ export default function CalendarBoard({ className }) {
       className={cn(
         "relative flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-primary/20 bg-background/70 p-3 shadow-sm",
         className,
-        // Tailwind arbitrary selectors: dopasowanie wyglądu wewnętrznych elementów react-big-calendar.
-        "[&_.rbc-calendar]:h-full [&_.rbc-row-segment]:p-0 [&_.rbc-time-content]:bg-background/60 [&_.rbc-time-header]:hidden [&_.rbc-time-gutter]:hidden [&_.rbc-day-bg]:bg-accent/20 [&_.rbc-off-range-bg]:opacity-40 [&_.rbc-header]:text-muted-foreground [&_.rbc-header]:font-medium [&_.rbc-day-slot]:bg-transparent"
+        "[&_.rbc-calendar]:h-full [&_.rbc-row-segment]:p-0 [&_.rbc-time-content]:bg-background/60 [&_.rbc-time-header]:hidden [&_.rbc-time-gutter]:hidden [&_.rbc-day-bg]:bg-accent/20 [&_.rbc-off-range-bg]:opacity-40 [&_.rbc-header]:text-muted-foreground [&_.rbc-header]:font-medium [&_.rbc-day-slot]:bg-transparent [&_.rbc-event-label]:hidden! [&_.rbc-day-slot_.rbc-events-container]:m-0 [&_.rbc-day-slot_.rbc-events-container]:p-0 [&_.rbc-day-slot_.rbc-event]:w-full! [&_.rbc-day-slot_.rbc-event]:left-0! [&_.rbc-day-slot_.rbc-event]:right-0! [&_.rbc-day-slot_.rbc-event]:min-h-[28px]!"
       )}
       onWheelCapture={handleWheelNavigate}
     >
@@ -474,15 +445,12 @@ export default function CalendarBoard({ className }) {
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}
             onRangeChange={(r) => {
-              // Dla `Views.WEEK` react-big-calendar przekazuje tablicę dni (Date[]).
-              // Nasz `getMeetings` potrzebuje zakresu jako { start, end }.
               if (Array.isArray(r)) {
                 const first = r[0];
                 const last = r[r.length - 1];
                 if (!first || !last) return;
                 setRange({
                   start: first,
-                  // koniec jako zakres wyłączny (dla pełnych ostatnich 24h)
                   end: addDays(last, 1),
                 });
                 return;
@@ -514,13 +482,14 @@ export default function CalendarBoard({ className }) {
                 background: "transparent",
                 margin: 0,
                 width: "100%",
-                padding: 0, // żeby kafelek eventu wyglądał jak pełna szerokość
+                left: 0,
+                right: "0px",
+                padding: 0,
                 borderRadius: 0,
               },
             })}
             style={{ height: "100%" }}
             defaultDate={initialDate}
-            // Domyślne przedziały czasowe – dopasowane do panelu.
             step={30}
           />
         )}
@@ -534,7 +503,6 @@ export default function CalendarBoard({ className }) {
         ) : null}
       </div>
 
-      {/* Dialog: tworzenie spotkania */}
       <Dialog open={newDialogOpen} onOpenChange={setNewDialogOpen}>
         <DialogContent className="max-w-[560px] rounded-2xl border-primary/20 bg-background dark:bg-zinc-950 p-6 z-60">
           <DialogHeader>
@@ -670,7 +638,6 @@ export default function CalendarBoard({ className }) {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog: szczegóły spotkania */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
         <DialogContent className="max-w-[560px] rounded-2xl border-primary/20 bg-background dark:bg-zinc-950 p-6 z-60">
           <DialogHeader>
