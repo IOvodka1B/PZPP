@@ -422,7 +422,7 @@ export default function CalendarBoard({ className }) {
       className={cn(
         "relative flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-primary/20 bg-background/70 p-3 shadow-sm",
         className,
-        "[&_.rbc-calendar]:h-full [&_.rbc-row-segment]:p-0 [&_.rbc-time-content]:bg-background/60 [&_.rbc-time-header]:hidden [&_.rbc-time-gutter]:hidden [&_.rbc-day-bg]:bg-accent/20 [&_.rbc-off-range-bg]:opacity-40 [&_.rbc-header]:text-muted-foreground [&_.rbc-header]:font-medium [&_.rbc-day-slot]:bg-transparent [&_.rbc-event-label]:hidden! [&_.rbc-day-slot_.rbc-events-container]:m-0 [&_.rbc-day-slot_.rbc-events-container]:p-0 [&_.rbc-day-slot_.rbc-event]:w-full! [&_.rbc-day-slot_.rbc-event]:left-0! [&_.rbc-day-slot_.rbc-event]:right-0! [&_.rbc-day-slot_.rbc-event]:min-h-[28px]!"
+        "[&_.rbc-calendar]:h-full [&_.rbc-row-segment]:p-0 [&_.rbc-time-view]:h-full [&_.rbc-time-view]:flex [&_.rbc-time-view]:flex-col [&_.rbc-time-content]:flex-1 [&_.rbc-time-content]:min-h-0 [&_.rbc-time-content]:bg-background/60 [&_.rbc-time-content]:pb-0 [&_.rbc-time-header]:hidden [&_.rbc-time-gutter]:hidden [&_.rbc-allday-cell]:hidden [&_.rbc-day-bg]:bg-accent/20 [&_.rbc-off-range-bg]:opacity-40 [&_.rbc-header]:text-muted-foreground [&_.rbc-header]:font-medium [&_.rbc-day-slot]:bg-transparent [&_.rbc-event-label]:hidden! [&_.rbc-day-slot_.rbc-events-container]:m-0 [&_.rbc-day-slot_.rbc-events-container]:p-0 [&_.rbc-day-slot_.rbc-event]:w-full! [&_.rbc-day-slot_.rbc-event]:left-0! [&_.rbc-day-slot_.rbc-event]:right-0! [&_.rbc-day-slot_.rbc-event]:min-h-[28px]!"
       )}
       onWheelCapture={handleWheelNavigate}
     >
