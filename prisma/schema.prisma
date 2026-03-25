@@ -93,6 +93,7 @@ model Lead {
 
   //Relacje
   tags        Tag[]      @relation("LeadTags")
+  customFields CustomField[]
   notes       Note[]
   documents   Document[]
   meetings    Meeting[]
@@ -225,4 +226,19 @@ model Meeting {
   lead        Lead?    @relation(fields: [leadId], references: [id])
 
   createdAt   DateTime @default(now())
+}
+model CustomField {
+  id        String   @id @default(cuid())
+  name      String   // np. "Rozmiar firmy", "Budżet", "Branża"
+  value     String   // Wartość pola np. "50-100", "50000 PLN", "IT"
+  
+  // Relacja Jeden-do-Wielu (Jeden Lead może mieć wiele własnych pól)
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Zabezpieczenie: Dany Lead nie może mieć dwóch Custom Fieldów o takiej samej nazwie
+  @@unique([leadId, name])
 }
