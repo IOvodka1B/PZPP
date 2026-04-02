@@ -26,6 +26,35 @@ import DocSignatureRequest, {
   getSubject as getDocSignatureRequestSubject,
 } from "@/emails/templates/DocSignatureRequest";
 import AuthPasswordReset, { getSubject as getAuthPasswordResetSubject } from "@/emails/templates/AuthPasswordReset";
+import CrmCustomMessage, {
+  getSubject as getCrmCustomMessageSubject,
+} from "@/emails/templates/CrmCustomMessage";
+
+/**
+ * Pobiera leada i wiadomości (rosnąco po dacie utworzenia).
+ * @param {string} leadId
+ */
+export async function getLeadMessages(leadId) {
+  try {
+    if (!leadId || typeof leadId !== "string") {
+      return null;
+    }
+
+    const lead = await prisma.lead.findUnique({
+      where: { id: leadId },
+      include: {
+        messages: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
+
+    return lead;
+  } catch (error) {
+    console.error("getLeadMessages:", error);
+    return null;
+  }
+}
 
 /**
  * Wysyła prawdziwego maila przez Nodemailer i zapisuje go w historii leada.
@@ -58,6 +87,8 @@ export async function sendEmailToLead(leadId, toEmail, subject, body) {
 
     // 3. Odświeżenie widoku profilu leada
     revalidatePath(`/crm/lead/${leadId}`);
+    revalidatePath("/dashboard/skrzynka");
+    revalidatePath("/student/skrzynka");
     return { success: true, data: savedMessage };
 
   } catch (error) {
@@ -98,6 +129,10 @@ const TEMPLATE_REGISTRY = {
   AuthPasswordReset: {
     Component: AuthPasswordReset,
     getSubject: getAuthPasswordResetSubject,
+  },
+  CrmCustomMessage: {
+    Component: CrmCustomMessage,
+    getSubject: getCrmCustomMessageSubject,
   },
 };
 
@@ -146,6 +181,8 @@ export async function sendTemplatedEmail(leadId, toEmail, templateName, props) {
     });
 
     revalidatePath(`/crm/lead/${leadId}`);
+    revalidatePath("/dashboard/skrzynka");
+    revalidatePath("/student/skrzynka");
     return { success: true, data: savedMessage };
   } catch (error) {
     console.error("Błąd podczas wysyłki templated email:", error);
@@ -186,6 +223,8 @@ export async function simulateSMSToLead(leadId, phone, body) {
     });
 
     revalidatePath(`/crm/lead/${leadId}`);
+    revalidatePath("/dashboard/skrzynka");
+    revalidatePath("/student/skrzynka");
     return { success: true, data: savedSMS };
 
   } catch (error) {
