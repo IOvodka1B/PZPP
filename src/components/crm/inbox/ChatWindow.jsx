@@ -16,18 +16,21 @@ function stripHtmlForPreview(html) {
  * @param {{ messages: Array<{ id: string; direction: string; type: string; body: string; subject?: string | null; createdAt: Date | string }> }} props
  */
 export default function ChatWindow({ messages }) {
-  const scrollRef = useRef(null);
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
     }
   }, [messages]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-background">
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto p-4">
+      <div
+        ref={scrollContainerRef}
+        className="min-h-0 flex-1 overflow-y-auto p-4"
+      >
         <div className="flex flex-col gap-3">
           {messages.map((msg) => {
             const outbound = msg.direction === "OUTBOUND";

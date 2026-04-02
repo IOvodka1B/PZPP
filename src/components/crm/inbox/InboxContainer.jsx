@@ -54,11 +54,11 @@ export default function InboxContainer({ leads = [], isStudentView = false }) {
   }
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <Toaster />
       <div
         className={cn(
-          "flex min-h-[min(70vh,720px)] w-full overflow-hidden rounded-xl border border-border bg-card shadow-sm",
+          "flex min-h-0 flex-1 w-full overflow-hidden rounded-xl border border-border bg-card shadow-sm",
           isStudentView ? "flex-col" : "flex-col md:flex-row"
         )}
       >
@@ -70,10 +70,15 @@ export default function InboxContainer({ leads = [], isStudentView = false }) {
           />
         ) : null}
 
-        <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col", isStudentView && "w-full")}>
+        <div
+          className={cn(
+            "flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+            isStudentView && "w-full"
+          )}
+        >
           {activeLead ? (
             <>
-              <div className="border-b border-border px-4 py-3">
+              <div className="shrink-0 border-b border-border px-4 py-3">
                 <h1 className="text-base font-semibold text-foreground">
                   {[activeLead.firstName, activeLead.lastName].filter(Boolean).join(" ") || "Lead"}
                 </h1>
@@ -85,6 +90,6 @@ export default function InboxContainer({ leads = [], isStudentView = false }) {
           ) : null}
         </div>
       </div>
-    </>
+    </div>
   );
 }

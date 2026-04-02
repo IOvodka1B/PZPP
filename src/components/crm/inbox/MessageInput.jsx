@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { sendTemplatedEmail } from "@/app/actions/messageActions";
 import { TEMPLATE_REGISTRY_KEYS } from "@/lib/emailTemplateKeys";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,21 @@ const TEMPLATE_OPTIONS = TEMPLATE_REGISTRY_KEYS.filter((k) => k !== "CrmCustomMe
 export default function MessageInput({ leadId, leadEmail, disabled }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+  const textareaRef = useRef(null);
   const [manualText, setManualText] = useState("");
   const [manualSubject, setManualSubject] = useState("Wiadomość");
   const [templateName, setTemplateName] = useState(TEMPLATE_OPTIONS[0] ?? "");
+
+  const handleInput = (e) => {
+    const target = e.target;
+    target.style.height = "auto";
+    target.style.height = `${target.scrollHeight}px`;
+  };
+
+  const handleManualTextChange = (e) => {
+    setManualText(e.target.value);
+    handleInput(e);
+  };
 
   const sendManual = () => {
     const text = manualText.trim();
@@ -44,6 +56,9 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
       if (res.success) {
         toast({ title: "Wysłano", description: "Wiadomość e-mail została wysłana." });
         setManualText("");
+        if (textareaRef.current) {
+          textareaRef.current.style.height = "auto";
+        }
       } else {
         toast({
           variant: "destructive",
@@ -71,7 +86,7 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
   };
 
   return (
-    <div className="border-t border-border bg-muted/20 p-4">
+    <div className="shrink-0 border-t border-border bg-muted/20 px-4 pt-4 pb-6">
       <Tabs defaultValue="manual" className="w-full">
         <TabsList className="mb-3 grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="manual">Ręczna wiadomość</TabsTrigger>
@@ -92,13 +107,14 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
           <div className="space-y-2">
             <Label htmlFor="inbox-body">Treść</Label>
             <Textarea
+              ref={textareaRef}
               id="inbox-body"
               value={manualText}
-              onChange={(e) => setManualText(e.target.value)}
+              onChange={handleManualTextChange}
               placeholder="Napisz wiadomość do leada…"
-              rows={4}
+              rows={1}
               disabled={disabled || isPending}
-              className="resize-y min-h-[100px]"
+              className="min-h-[44px] max-h-[200px] resize-none overflow-y-auto field-sizing-fixed"
             />
           </div>
           <Button type="button" onClick={sendManual} disabled={disabled || isPending}>

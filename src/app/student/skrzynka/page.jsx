@@ -20,14 +20,16 @@ export default async function StudentSkrzynkaPage() {
   });
 
   return (
-    <div className="space-y-4">
-      <div>
+    <section className="flex min-h-0 flex-1 flex-col gap-4 pb-4">
+      <div className="shrink-0 space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Skrzynka</h1>
         <p className="text-sm text-muted-foreground">
           Twoja korespondencja z zespołem (powiązana z kontem leada).
         </p>
       </div>
-      <InboxContainer leads={lead ? [lead] : []} isStudentView={true} />
-    </div>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <InboxContainer leads={lead ? [lead] : []} isStudentView={true} />
+      </div>
+    </section>
   );
 }

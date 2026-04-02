@@ -6,7 +6,7 @@ import CalendarBoard from "@/components/features/calendar/CalendarBoard";
  */
 export default function CalendarPage() {
   return (
-    <section className="flex h-[calc(100vh-8.5rem)] flex-col space-y-4 pb-4">
+    <section className="flex min-h-0 flex-1 flex-col gap-4 pb-4">
       <header>
         <h1 className="text-2xl font-semibold">Kalendarz</h1>
         <p className="text-sm text-muted-foreground">

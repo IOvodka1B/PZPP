@@ -5,7 +5,7 @@ export async function POST(request) {
   try {
     const payload = await request.json();
 
-    // TODO: W przyszłości zaktualizować mapowanie pól pod specyficzny payload dostawcy (np. Resend/Sendgrid)
+    // TODO: W przyszłości zaktualizować mapowanie pól pod specyficzny payload dostawcy
     const sender = payload.sender || payload.from;
     const text = payload.text || payload.body;
     const subject = payload.subject || "Odpowiedź";

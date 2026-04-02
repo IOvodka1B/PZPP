@@ -7,11 +7,13 @@ import Sidebar from "@/components/layout/Sidebar";
  */
 export default function DashboardLayout({ children }) {
   return (
-    <div className="grid min-h-screen grid-cols-1 md:grid-cols-[1fr_4fr]">
-      <div className="min-w-0">
+    <div className="grid min-h-dvh grid-cols-1 grid-rows-[auto_minmax(0,1fr)] md:h-dvh md:min-h-0 md:grid-cols-[1fr_4fr] md:grid-rows-1">
+      <div className="min-w-0 md:flex md:h-full md:min-h-0 md:flex-col">
         <Sidebar />
       </div>
-      <main className="min-w-0 bg-background p-6">{children}</main>
+      <main className="flex min-h-0 min-w-0 flex-col bg-background px-6 pt-6 md:h-full md:overflow-y-auto">
+        {children}
+      </main>
     </div>
   );
 }
