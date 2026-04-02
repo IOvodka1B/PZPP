@@ -93,6 +93,26 @@ export default function GrapesEditor() {
         },
       });
 
+      editor.BlockManager.add("booking-widget", {
+        label: "Widget rezerwacji",
+        category: "Forms",
+        attributes: { class: "fa fa-calendar" },
+        content: `
+          <section style="padding: 24px; background: #f8fafc; border-radius: 12px;">
+            <h2 style="margin: 0 0 12px; font-size: 28px; color: #0f172a;">Umów rozmowę</h2>
+            <p style="margin: 0 0 16px; color: #475569;">
+              Sprawdź dostępne terminy i zarezerwuj spotkanie online.
+            </p>
+            <iframe
+              src="/rezerwacja"
+              title="Widget rezerwacji"
+              style="width: 100%; min-height: 760px; border: 0; border-radius: 10px; background: #ffffff;"
+              loading="lazy">
+            </iframe>
+          </section>
+        `,
+      });
+
       setEditorInstance(editor);
       editorRef.current = editor;
 
