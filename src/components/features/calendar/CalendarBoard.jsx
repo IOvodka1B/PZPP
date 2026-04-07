@@ -16,11 +16,15 @@ import {
   startOfWeek,
 } from "date-fns";
 import { pl as plLocale } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Chrome, Mail, CalendarDays, ExternalLink } from "lucide-react";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
-import { createMeeting, deleteMeeting, getMeetings } from "@/app/actions/meetingActions";
+import {
+  createMeeting,
+  deleteMeeting,
+  getUnifiedCalendarEvents,
+} from "@/app/actions/meetingActions";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -178,8 +182,22 @@ export default function CalendarBoard({ className }) {
 
       return (
         <div className="flex h-full w-full">
-          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-lg border border-primary/20 bg-accent px-2 py-1 text-foreground shadow-sm">
-            <div className="min-w-0 truncate text-center text-[12px] font-semibold leading-none">
+          <div
+            className={cn(
+              "flex h-full w-full items-center gap-1 overflow-hidden rounded-lg border px-2 py-1 text-foreground shadow-sm",
+              event?.source === "google" && "border-red-200 bg-red-100/80",
+              event?.source === "outlook" && "border-blue-200 bg-blue-100/80",
+              event?.source === "local" && "border-primary/20 bg-accent"
+            )}
+          >
+            {event?.source === "google" ? (
+              <Chrome className="size-3.5 shrink-0 text-red-600" />
+            ) : event?.source === "outlook" ? (
+              <Mail className="size-3.5 shrink-0 text-blue-700" />
+            ) : (
+              <CalendarDays className="size-3.5 shrink-0 text-primary" />
+            )}
+            <div className="min-w-0 truncate text-[12px] font-semibold leading-none">
               {normalizedTitle || title}
             </div>
           </div>
@@ -229,16 +247,20 @@ export default function CalendarBoard({ className }) {
       setIsLoading(true);
       setLoadError(null);
       try {
-        const result = await getMeetings(start.toISOString(), end.toISOString());
+        const result = await getUnifiedCalendarEvents(
+          null,
+          start.toISOString(),
+          end.toISOString()
+        );
         setEvents(
-          (result || []).map((m) => ({
-            id: m.id,
-            title: m.title,
-            start: new Date(m.startTime),
-            end: new Date(m.endTime),
-            meetLink: m.meetLink,
-            organizerId: m.organizerId,
-            leadId: m.leadId,
+          (result || []).map((event) => ({
+            id: event.id,
+            title: event.title,
+            start: new Date(event.start),
+            end: new Date(event.end),
+            source: event.source,
+            externalUrl: event.externalUrl,
+            meetLink: event.externalUrl,
           }))
         );
       } catch (e) {
@@ -268,6 +290,10 @@ export default function CalendarBoard({ className }) {
 
   const handleSelectEvent = useCallback((event) => {
     if (!event) return;
+    if (event.source !== "local" && event.externalUrl) {
+      window.open(event.externalUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
     setSelectedEvent(event);
     setDetailsDialogOpen(true);
   }, []);
@@ -678,16 +704,30 @@ export default function CalendarBoard({ className }) {
                 </div>
               ) : (
                 <div className="rounded-xl border border-primary/15 bg-accent/20 px-4 py-3 text-sm text-muted-foreground">
-                  Brak linku do spotkania.
+                  {selectedEvent?.source === "local"
+                    ? "Brak linku do spotkania."
+                    : "To wydarzenie pochodzi z integracji zewnętrznej."}
                 </div>
               )}
+
+              {selectedEvent?.source !== "local" && selectedEvent?.externalUrl ? (
+                <a
+                  href={selectedEvent.externalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-accent/30 px-4 py-3 text-primary underline-offset-4 hover:underline"
+                >
+                  <ExternalLink className="size-4" />
+                  Otwórz wydarzenie w źródle
+                </a>
+              ) : null}
             </div>
           ) : (
             <div className="text-sm text-muted-foreground">Brak danych.</div>
           )}
 
           <DialogFooter className="mt-4">
-            {selectedEvent ? (
+            {selectedEvent?.source === "local" ? (
               <AlertDialog
                 open={deleteConfirmOpen}
                 onOpenChange={setDeleteConfirmOpen}
