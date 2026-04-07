@@ -10,6 +10,7 @@ import {
   updateProfile,
   updateTimezone,
 } from "@/app/actions/settingsActions";
+import { getIntegrationsData } from "@/app/actions/integrationActions";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import {
@@ -37,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import IntegrationPanelClient from "./integracje/IntegrationPanelClient";
 
 const TIMEZONE_OPTIONS = [
   { value: "Europe/Warsaw", label: "Europe/Warsaw (PL)" },
@@ -79,6 +81,7 @@ const preferencesSchema = z.object({
 export default function SettingsPage() {
   const { toast } = useToast();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [connectedProviders, setConnectedProviders] = useState([]);
 
   const profileForm = useForm({
     resolver: zodResolver(profileSchema),
@@ -107,25 +110,34 @@ export default function SettingsPage() {
   useEffect(() => {
     async function loadSettings() {
       setIsInitialLoading(true);
-      const result = await getSettingsData();
+      const [settingsResult, integrationsResult] = await Promise.all([
+        getSettingsData(),
+        getIntegrationsData(),
+      ]);
 
-      if (!result?.success) {
+      if (!settingsResult?.success) {
         toast({
           variant: "destructive",
           title: "Nie udało się pobrać ustawień",
-          description: result?.message || "Spróbuj odświeżyć stronę.",
+          description: settingsResult?.message || "Spróbuj odświeżyć stronę.",
         });
         setIsInitialLoading(false);
         return;
       }
 
       profileForm.reset({
-        firstName: result.data.firstName || "",
-        lastName: result.data.lastName || "",
+        firstName: settingsResult.data.firstName || "",
+        lastName: settingsResult.data.lastName || "",
       });
       preferencesForm.reset({
-        timezone: result.data.timezone || "Europe/Warsaw",
+        timezone: settingsResult.data.timezone || "Europe/Warsaw",
       });
+
+      if (integrationsResult?.success) {
+        setConnectedProviders(integrationsResult.data.connectedProviders || []);
+      } else {
+        setConnectedProviders([]);
+      }
       setIsInitialLoading(false);
     }
 
@@ -171,21 +183,22 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6 p-4 md:p-6">
+    <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
       <Toaster />
 
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">Ustawienia konta</h1>
         <p className="text-sm text-muted-foreground">
-          Zarządzaj profilem, bezpieczeństwem i preferencjami strefy czasowej.
+          Zarządzaj profilem, bezpieczeństwem, preferencjami i integracjami.
         </p>
       </div>
 
-      <Tabs defaultValue="profil" className="w-full">
-        <TabsList className="grid h-auto w-full grid-cols-1 gap-2 sm:grid-cols-3">
+      <Tabs defaultValue="profil" className="w-full space-y-1">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-2 rounded-lg bg-muted/60 p-1 md:grid-cols-4">
           <TabsTrigger value="profil">Profil</TabsTrigger>
           <TabsTrigger value="bezpieczenstwo">Bezpieczeństwo</TabsTrigger>
           <TabsTrigger value="preferencje">Preferencje</TabsTrigger>
+          <TabsTrigger value="integracje">Integracje</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profil" className="pt-4">
@@ -372,6 +385,10 @@ export default function SettingsPage() {
               </Form>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="integracje" className="pt-4">
+          <IntegrationPanelClient connectedProviders={connectedProviders} />
         </TabsContent>
       </Tabs>
     </div>
