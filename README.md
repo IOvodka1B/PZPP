@@ -61,3 +61,6 @@ PZPP_PROJEKT_1/
         ├── layout.js         <-- Root Layout (tu podpinamy React Query i fonty)
         └── page.js           <-- Główny plik przekierowujący na (public)
 ```
+## 🗺️ Roadmapa i Architektura Sprzedaży
+Szczegółowy przepływ od GrapesJS do płatności Stripe znajdziesz w dedykowanym pliku: 
+👉 [Architektura Sprzedaży Kursów](COURSE_SALES_FLOW.md)
