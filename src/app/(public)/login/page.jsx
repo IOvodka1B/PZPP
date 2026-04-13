@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 
 // Importujemy gotowe klocki z Waszego repozytorium (shadcn/ui)
@@ -69,6 +69,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const resolveRedirectPath = (role) => {
+    if (role === "UCZESTNIK") return "/student";
+    if (role === "KREATOR") return "/dashboard";
+    if (role === "ADMIN") return "/dashboard";
+    return "/dashboard";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -91,7 +98,9 @@ export default function LoginPage() {
           title: "Sukces",
           description: "Zalogowano pomyślnie. Trwa przekierowanie...",
         });
-        router.push("/dashboard");
+        const session = await getSession();
+        const role = session?.user?.role;
+        router.replace(resolveRedirectPath(role));
         router.refresh();
       }
     } catch (error) {
