@@ -31,6 +31,7 @@ export type LandingPageMinAggregateOutputType = {
   htmlData: string | null
   cssData: string | null
   isActive: boolean | null
+  isPublic: boolean | null
   authorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -43,6 +44,7 @@ export type LandingPageMaxAggregateOutputType = {
   htmlData: string | null
   cssData: string | null
   isActive: boolean | null
+  isPublic: boolean | null
   authorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -55,6 +57,7 @@ export type LandingPageCountAggregateOutputType = {
   htmlData: number
   cssData: number
   isActive: number
+  isPublic: number
   authorId: number
   createdAt: number
   updatedAt: number
@@ -69,6 +72,7 @@ export type LandingPageMinAggregateInputType = {
   htmlData?: true
   cssData?: true
   isActive?: true
+  isPublic?: true
   authorId?: true
   createdAt?: true
   updatedAt?: true
@@ -81,6 +85,7 @@ export type LandingPageMaxAggregateInputType = {
   htmlData?: true
   cssData?: true
   isActive?: true
+  isPublic?: true
   authorId?: true
   createdAt?: true
   updatedAt?: true
@@ -93,6 +98,7 @@ export type LandingPageCountAggregateInputType = {
   htmlData?: true
   cssData?: true
   isActive?: true
+  isPublic?: true
   authorId?: true
   createdAt?: true
   updatedAt?: true
@@ -178,6 +184,7 @@ export type LandingPageGroupByOutputType = {
   htmlData: string | null
   cssData: string | null
   isActive: boolean
+  isPublic: boolean
   authorId: string | null
   createdAt: Date
   updatedAt: Date
@@ -211,6 +218,7 @@ export type LandingPageWhereInput = {
   htmlData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   cssData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   isActive?: Prisma.BoolFilter<"LandingPage"> | boolean
+  isPublic?: Prisma.BoolFilter<"LandingPage"> | boolean
   authorId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
@@ -224,6 +232,7 @@ export type LandingPageOrderByWithRelationInput = {
   htmlData?: Prisma.SortOrderInput | Prisma.SortOrder
   cssData?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -240,6 +249,7 @@ export type LandingPageWhereUniqueInput = Prisma.AtLeast<{
   htmlData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   cssData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   isActive?: Prisma.BoolFilter<"LandingPage"> | boolean
+  isPublic?: Prisma.BoolFilter<"LandingPage"> | boolean
   authorId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
@@ -253,6 +263,7 @@ export type LandingPageOrderByWithAggregationInput = {
   htmlData?: Prisma.SortOrderInput | Prisma.SortOrder
   cssData?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -271,6 +282,7 @@ export type LandingPageScalarWhereWithAggregatesInput = {
   htmlData?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   cssData?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"LandingPage"> | boolean
+  isPublic?: Prisma.BoolWithAggregatesFilter<"LandingPage"> | boolean
   authorId?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"LandingPage"> | Date | string
@@ -283,6 +295,7 @@ export type LandingPageCreateInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   author?: Prisma.UserCreateNestedOneWithoutLandingPagesInput
@@ -295,6 +308,7 @@ export type LandingPageUncheckedCreateInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  isPublic?: boolean
   authorId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -307,6 +321,7 @@ export type LandingPageUpdateInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneWithoutLandingPagesNestedInput
@@ -319,6 +334,7 @@ export type LandingPageUncheckedUpdateInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -331,6 +347,7 @@ export type LandingPageCreateManyInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  isPublic?: boolean
   authorId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -343,6 +360,7 @@ export type LandingPageUpdateManyMutationInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -354,6 +372,7 @@ export type LandingPageUncheckedUpdateManyInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -376,6 +395,7 @@ export type LandingPageCountOrderByAggregateInput = {
   htmlData?: Prisma.SortOrder
   cssData?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -388,6 +408,7 @@ export type LandingPageMaxOrderByAggregateInput = {
   htmlData?: Prisma.SortOrder
   cssData?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -400,6 +421,7 @@ export type LandingPageMinOrderByAggregateInput = {
   htmlData?: Prisma.SortOrder
   cssData?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -458,6 +480,7 @@ export type LandingPageCreateWithoutAuthorInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -469,6 +492,7 @@ export type LandingPageUncheckedCreateWithoutAuthorInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -509,6 +533,7 @@ export type LandingPageScalarWhereInput = {
   htmlData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   cssData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   isActive?: Prisma.BoolFilter<"LandingPage"> | boolean
+  isPublic?: Prisma.BoolFilter<"LandingPage"> | boolean
   authorId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
@@ -521,6 +546,7 @@ export type LandingPageCreateManyAuthorInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -532,6 +558,7 @@ export type LandingPageUpdateWithoutAuthorInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -543,6 +570,7 @@ export type LandingPageUncheckedUpdateWithoutAuthorInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -554,6 +582,7 @@ export type LandingPageUncheckedUpdateManyWithoutAuthorInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -567,6 +596,7 @@ export type LandingPageSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  isPublic?: boolean
   authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -580,6 +610,7 @@ export type LandingPageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  isPublic?: boolean
   authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -593,6 +624,7 @@ export type LandingPageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  isPublic?: boolean
   authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -606,12 +638,13 @@ export type LandingPageSelectScalar = {
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  isPublic?: boolean
   authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LandingPageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "htmlData" | "cssData" | "isActive" | "authorId" | "createdAt" | "updatedAt", ExtArgs["result"]["landingPage"]>
+export type LandingPageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "htmlData" | "cssData" | "isActive" | "isPublic" | "authorId" | "createdAt" | "updatedAt", ExtArgs["result"]["landingPage"]>
 export type LandingPageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.LandingPage$authorArgs<ExtArgs>
 }
@@ -634,6 +667,7 @@ export type $LandingPagePayload<ExtArgs extends runtime.Types.Extensions.Interna
     htmlData: string | null
     cssData: string | null
     isActive: boolean
+    isPublic: boolean
     authorId: string | null
     createdAt: Date
     updatedAt: Date
@@ -1067,6 +1101,7 @@ export interface LandingPageFieldRefs {
   readonly htmlData: Prisma.FieldRef<"LandingPage", 'String'>
   readonly cssData: Prisma.FieldRef<"LandingPage", 'String'>
   readonly isActive: Prisma.FieldRef<"LandingPage", 'Boolean'>
+  readonly isPublic: Prisma.FieldRef<"LandingPage", 'Boolean'>
   readonly authorId: Prisma.FieldRef<"LandingPage", 'String'>
   readonly createdAt: Prisma.FieldRef<"LandingPage", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"LandingPage", 'DateTime'>

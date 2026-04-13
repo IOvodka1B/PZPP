@@ -6,7 +6,7 @@ export default withAuth(
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
-    // 1. Jeśli ktoś próbuje wejść do Panelu Kreatora (Dashboard)
+    // Panel Kreatora
     if (
       path.startsWith("/dashboard") &&
       token?.role !== "KREATOR" &&
@@ -15,26 +15,25 @@ export default withAuth(
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    // 2. Jeśli ktoś próbuje wejść do Portalu Studenta
-    if (path.startsWith("/student") && token?.role !== "UCZESTNIK") {
+    // Portal Studenta
+    if (
+      path.startsWith("/student") &&
+      token?.role !== "UCZESTNIK" &&
+      token?.role !== "ADMIN"
+    ) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
+
+    return NextResponse.next();
   },
   {
     callbacks: {
-      // Middleware odpali się tylko, jeśli użytkownik jest zalogowany (ma token)
-      authorized: ({ req, token }) => {
-        return !!token;
-      },
+      authorized: ({ token }) => !!token,
     },
   }
 );
 
-// KROK 3: Konfiguracja - które ścieżki ma sprawdzać bramkarz?
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/student/:path*",
-    // Tu dodaj inne chronione ścieżki
-  ],
+  matcher: ["/dashboard/:path*", "/student/:path*"],
 };
+
