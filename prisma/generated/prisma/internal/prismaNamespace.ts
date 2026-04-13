@@ -2094,7 +2094,8 @@ export const LeadScalarFieldEnum = {
   score: 'score',
   source: 'source',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  ownerId: 'ownerId'
 } as const
 
 export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
@@ -2125,6 +2126,7 @@ export const LandingPageScalarFieldEnum = {
   htmlData: 'htmlData',
   cssData: 'cssData',
   isActive: 'isActive',
+  isPublic: 'isPublic',
   authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2168,7 +2170,8 @@ export const CourseScalarFieldEnum = {
   price: 'price',
   isPublished: 'isPublished',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  authorId: 'authorId'
 } as const
 
 export type CourseScalarFieldEnum = (typeof CourseScalarFieldEnum)[keyof typeof CourseScalarFieldEnum]
