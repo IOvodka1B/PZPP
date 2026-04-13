@@ -216,16 +216,6 @@ model Lesson {
   moduleId  String
   module    Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
-  resources LessonResource[]
-  id          String   @id @default(cuid())
-  title       String
-  videoUrl    String?  //Hostowanie wideo
-  videoText   String?  @db.Text // Tekst / transkrypcja do wideo
-  content     String?  @db.Text
-  order       Int
-  moduleId    String
-  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-
   resources   LessonResource[]
   completions LessonCompletion[]
 }
@@ -250,20 +240,13 @@ model LessonResource {
 }
 
 model Enrollment {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  progress  Int      @default(0) // Procent ukończenia
-  createdAt DateTime @default(now())
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  progress    Int      @default(0) // Procent ukończenia
-  createdAt   DateTime @default(now())
+  id                String             @id @default(cuid())
+  userId            String
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId          String
+  course            Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress          Int                @default(0) // Procent ukończenia
+  createdAt         DateTime           @default(now())
   lessonCompletions LessonCompletion[]
 
   @@unique([userId, courseId])
