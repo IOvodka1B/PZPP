@@ -8,12 +8,15 @@ import {
   Mail,
   MessageSquareText,
   NotepadText,
+  Trash2,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import {
   addNoteToLead,
   addTaskToLead,
   getLead360Profile,
 } from "@/app/actions/crmTimelineActions";
+import { deleteLead } from "@/app/actions/leadActions";
 import {
   Sheet,
   SheetContent,
@@ -72,7 +75,23 @@ function getInitials(firstName, lastName) {
   return `${first}${last}`.toUpperCase() || "?";
 }
 
+function toDatetimeLocalValue(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+    date.getHours()
+  )}:${pad(date.getMinutes())}`;
+}
+
+function addDays(date, days) {
+  const d = new Date(date.getTime());
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
 export default function LeadProfileSheet({ isOpen, onClose, leadId }) {
+  const sessionState = useSession();
+  const session = sessionState?.data;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [profile, setProfile] = useState(null);
@@ -87,6 +106,20 @@ export default function LeadProfileSheet({ isOpen, onClose, leadId }) {
   });
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isSavingTask, setIsSavingTask] = useState(false);
+  const [isDeletingLead, setIsDeletingLead] = useState(false);
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (typeof userId !== "string" || !userId.trim()) return;
+
+    setTaskForm((prev) => {
+      const nextDueDate =
+        prev.dueDate && String(prev.dueDate).length
+          ? prev.dueDate
+          : toDatetimeLocalValue(addDays(new Date(), 7));
+      return { ...prev, userId, dueDate: nextDueDate };
+    });
+  }, [session?.user?.id]);
 
   const loadLeadProfile = async () => {
     if (!leadId) return;
@@ -104,10 +137,6 @@ export default function LeadProfileSheet({ isOpen, onClose, leadId }) {
 
     setProfile(result.lead);
     setTimelineEvents(result.timelineEvents || []);
-    setTaskForm((prev) => ({
-      ...prev,
-      userId: result?.lead?.tasks?.[0]?.userId || prev.userId,
-    }));
     setIsLoading(false);
   };
 
@@ -178,7 +207,34 @@ export default function LeadProfileSheet({ isOpen, onClose, leadId }) {
           <div className="h-[calc(100vh-90px)] overflow-y-auto p-6 space-y-6">
             <Card className="gap-4 bg-zinc-50/70 border-zinc-200">
               <CardHeader className="pb-0">
-                <CardTitle className="text-base">Lead Snapshot</CardTitle>
+                <div className="flex items-start justify-between gap-3">
+                  <CardTitle className="text-base">Lead Snapshot</CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isDeletingLead || !leadId}
+                    onClick={async () => {
+                      if (!leadId) return;
+                      const ok = window.confirm(
+                        "Czy na pewno chcesz usunąć tego leada? Ta operacja jest nieodwracalna."
+                      );
+                      if (!ok) return;
+                      setIsDeletingLead(true);
+                      const res = await deleteLead(leadId);
+                      setIsDeletingLead(false);
+                      if (!res?.success) {
+                        setError(res?.error || "Nie udało się usunąć leada.");
+                        return;
+                      }
+                      onClose();
+                    }}
+                    className="gap-2"
+                  >
+                    <Trash2 className="size-4" />
+                    Usuń
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start justify-between gap-4">
@@ -301,18 +357,41 @@ export default function LeadProfileSheet({ isOpen, onClose, leadId }) {
                             setTaskForm((prev) => ({ ...prev, dueDate: e.target.value }))
                           }
                         />
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setTaskForm((prev) => ({
+                                ...prev,
+                                dueDate: toDatetimeLocalValue(addDays(new Date(), 7)),
+                              }))
+                            }
+                          >
+                            Za tydzień
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setTaskForm((prev) => ({
+                                ...prev,
+                                dueDate: toDatetimeLocalValue(addDays(new Date(), 1)),
+                              }))
+                            }
+                          >
+                            Jutro
+                          </Button>
+                        </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="task-user-id">Przypisany User ID</Label>
-                        <Input
-                          id="task-user-id"
-                          value={taskForm.userId}
-                          onChange={(e) =>
-                            setTaskForm((prev) => ({ ...prev, userId: e.target.value }))
-                          }
-                          placeholder="ID pracownika"
-                        />
+                        <Label>Przypisanie</Label>
+                        <div className="rounded-md border bg-white px-3 py-2 text-sm text-zinc-700">
+                          {session?.user?.name || session?.user?.email || "Ja"}
+                        </div>
                       </div>
                     </div>
 
