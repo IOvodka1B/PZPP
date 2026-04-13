@@ -420,6 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
+    modelProps: "user" | "account" | "apiKeyIntegration" | "session" | "verificationToken" | "lead" | "tag" | "note" | "landingPage" | "message" | "task" | "course" | "module" | "lesson" | "lessonResource" | "enrollment" | "certificate" | "document" | "meeting" | "customField"
     modelProps: "user" | "account" | "apiKeyIntegration" | "session" | "verificationToken" | "lead" | "tag" | "note" | "landingPage" | "message" | "task" | "course" | "module" | "lesson" | "lessonResource" | "enrollment" | "certificate" | "lessonCompletion" | "document" | "meeting" | "customField"
     txIsolationLevel: TransactionIsolationLevel
   }
@@ -2125,6 +2126,7 @@ export const LandingPageScalarFieldEnum = {
   htmlData: 'htmlData',
   cssData: 'cssData',
   isActive: 'isActive',
+  authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

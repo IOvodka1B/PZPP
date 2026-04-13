@@ -4,9 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
-        
+
 enum Role {
   ADMIN
   KREATOR
@@ -14,44 +14,45 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?   // Pole na zahashowane hasło
-  timezone      String?   @default("Europe/Warsaw")
-  emailVerified DateTime?
-  image         String?
-  role          Role      @default(UCZESTNIK)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                      String    @id @default(cuid())
+  name                    String?
+  email                   String?   @unique
+  password                String? // Pole na zahashowane hasło
+  timezone                String?   @default("Europe/Warsaw")
+  emailVerified           DateTime?
+  image                   String?
+  role                    Role      @default(UCZESTNIK)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
   jiraSelectedProjectKey  String?
   jiraSelectedProjectName String?
   jiraSelectedCloudId     String?
 
-  accounts      Account[]
-  sessions      Session[]
+  accounts           Account[]
+  sessions           Session[]
   apiKeyIntegrations ApiKeyIntegration[]
-  
+
   // Relacje biznesowe
-  organizedMeetings Meeting[]  @relation("MeetingOrganizer")
+  organizedMeetings Meeting[]     @relation("MeetingOrganizer")
   tasks             Task[]
-  enrollments       Enrollment[] 
+  enrollments       Enrollment[]
   certificates      Certificate[]
+  landingPages      LandingPage[]
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -67,8 +68,8 @@ model ApiKeyIntegration {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
   @@unique([userId, providerName])
+  @@index([userId])
 }
 
 model Session {
@@ -99,25 +100,25 @@ enum LeadStatus {
 }
 
 model Lead {
-  id          String     @id @default(cuid())
-  firstName   String
-  lastName    String?
-  email       String     @unique
-  phone       String?
-  status      LeadStatus @default(NEW) //Statusy leadów i pipeline
-  score       Int        @default(0)   //Lead scoring
-  source      String?    //Z jakiego lejka/formularza pochodzi
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id        String     @id @default(cuid())
+  firstName String
+  lastName  String?
+  email     String     @unique
+  phone     String?
+  status    LeadStatus @default(NEW) //Statusy leadów i pipeline
+  score     Int        @default(0) //Lead scoring
+  source    String? //Z jakiego lejka/formularza pochodzi
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   //Relacje
-  tags        Tag[]      @relation("LeadTags")
+  tags         Tag[]         @relation("LeadTags")
   customFields CustomField[]
-  notes       Note[]
-  documents   Document[]
-  meetings    Meeting[]
-  messages    Message[]
-  tasks       Task[]
+  notes        Note[]
+  documents    Document[]
+  meetings     Meeting[]
+  messages     Message[]
+  tasks        Task[]
 }
 
 model Tag {
@@ -140,9 +141,13 @@ model LandingPage {
   slug      String   @unique //Do publikowania na domenie
   htmlData  String?  @db.Text //Wygenerowany kod przez GrapesJS
   cssData   String?  @db.Text
-  isActive  Boolean  @default(true)
+  isActive  Boolean  @default(false)
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([authorId])
 }
 
 //MODUŁ C: KOMUNIKACJA (Email, SMS)
@@ -151,8 +156,8 @@ model Message {
   id        String   @id @default(cuid())
   subject   String?
   body      String   @db.Text
-  type      String   //np. 'EMAIL'
-  direction String   //'INBOUND' (od leada), 'OUTBOUND' (do leada)
+  type      String //np. 'EMAIL'
+  direction String //'INBOUND' (od leada), 'OUTBOUND' (do leada)
   leadId    String
   lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -193,15 +198,25 @@ model Course {
 }
 
 model Module {
-  id          String   @id @default(cuid())
-  title       String
-  order       Int      // Kolejność modułów
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons     Lesson[]
+  id       String   @id @default(cuid())
+  title    String
+  order    Int // Kolejność modułów
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
 }
 
 model Lesson {
+  id        String  @id @default(cuid())
+  title     String
+  videoUrl  String? //Hostowanie wideo
+  videoText String? @db.Text // Tekst / transkrypcja do wideo
+  content   String? @db.Text
+  order     Int
+  moduleId  String
+  module    Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  resources LessonResource[]
   id          String   @id @default(cuid())
   title       String
   videoUrl    String?  //Hostowanie wideo
@@ -221,20 +236,27 @@ enum LessonResourceType {
 }
 
 model LessonResource {
-  id       String             @id @default(cuid())
-  type     LessonResourceType
-  title    String
-  url      String
-  order    Int                @default(1)
+  id    String             @id @default(cuid())
+  type  LessonResourceType
+  title String
+  url   String
+  order Int                @default(1)
 
   lessonId String
-  lesson   Lesson             @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@index([lessonId])
   @@index([lessonId, order])
 }
 
 model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress  Int      @default(0) // Procent ukończenia
+  createdAt DateTime @default(now())
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -248,11 +270,11 @@ model Enrollment {
 }
 
 model Certificate {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title       String
-  issuedAt    DateTime @default(now())
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title    String
+  issuedAt DateTime @default(now())
 }
 
 model LessonCompletion {
@@ -272,46 +294,48 @@ model LessonCompletion {
 // ======================================================
 
 model Document {
-  id          String   @id @default(cuid())
-  title       String
-  fileUrl     String   // Ścieżka do zapisanego pliku PDF/HTML
-  isSigned    Boolean  @default(false)
-  signature   String?  @db.Text // Plik graficzny z react-signature-canvas (base64)
-  signedAt    DateTime?
-  
-  leadId      String
-  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
+  id        String    @id @default(cuid())
+  title     String
+  fileUrl   String // Ścieżka do zapisanego pliku PDF/HTML
+  isSigned  Boolean   @default(false)
+  signature String?   @db.Text // Plik graficzny z react-signature-canvas (base64)
+  signedAt  DateTime?
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 }
 
 // MODUŁ F: KALENDARZ I SPOTKANIA
 
 model Meeting {
-  id          String   @id @default(cuid())
-  title       String
-  startTime   DateTime // Format UTC
-  endTime     DateTime
-  meetLink    String?  // Wirtualny pokój, np. Zoom/Meet
+  id        String   @id @default(cuid())
+  title     String
+  startTime DateTime // Format UTC
+  endTime   DateTime
+  meetLink  String? // Wirtualny pokój, np. Zoom/Meet
 
   organizerId String
-  organizer   User     @relation("MeetingOrganizer", fields: [organizerId], references: [id])
-  
-  leadId      String?
-  lead        Lead?    @relation(fields: [leadId], references: [id])
+  organizer   User   @relation("MeetingOrganizer", fields: [organizerId], references: [id])
 
-  createdAt   DateTime @default(now())
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id])
+
+  createdAt DateTime @default(now())
+
   @@unique([organizerId, startTime])
 }
+
 model CustomField {
-  id        String   @id @default(cuid())
-  name      String   // np. "Rozmiar firmy", "Budżet", "Branża"
-  value     String   // Wartość pola np. "50-100", "50000 PLN", "IT"
-  
+  id    String @id @default(cuid())
+  name  String // np. "Rozmiar firmy", "Budżet", "Branża"
+  value String // Wartość pola np. "50-100", "50000 PLN", "IT"
+
   // Relacja Jeden-do-Wielu (Jeden Lead może mieć wiele własnych pól)
-  leadId    String
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -31,6 +31,7 @@ export type LandingPageMinAggregateOutputType = {
   htmlData: string | null
   cssData: string | null
   isActive: boolean | null
+  authorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +43,7 @@ export type LandingPageMaxAggregateOutputType = {
   htmlData: string | null
   cssData: string | null
   isActive: boolean | null
+  authorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +55,7 @@ export type LandingPageCountAggregateOutputType = {
   htmlData: number
   cssData: number
   isActive: number
+  authorId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +69,7 @@ export type LandingPageMinAggregateInputType = {
   htmlData?: true
   cssData?: true
   isActive?: true
+  authorId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +81,7 @@ export type LandingPageMaxAggregateInputType = {
   htmlData?: true
   cssData?: true
   isActive?: true
+  authorId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +93,7 @@ export type LandingPageCountAggregateInputType = {
   htmlData?: true
   cssData?: true
   isActive?: true
+  authorId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +178,7 @@ export type LandingPageGroupByOutputType = {
   htmlData: string | null
   cssData: string | null
   isActive: boolean
+  authorId: string | null
   createdAt: Date
   updatedAt: Date
   _count: LandingPageCountAggregateOutputType | null
@@ -204,8 +211,10 @@ export type LandingPageWhereInput = {
   htmlData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   cssData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   isActive?: Prisma.BoolFilter<"LandingPage"> | boolean
+  authorId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
+  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type LandingPageOrderByWithRelationInput = {
@@ -215,8 +224,10 @@ export type LandingPageOrderByWithRelationInput = {
   htmlData?: Prisma.SortOrderInput | Prisma.SortOrder
   cssData?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  author?: Prisma.UserOrderByWithRelationInput
 }
 
 export type LandingPageWhereUniqueInput = Prisma.AtLeast<{
@@ -229,8 +240,10 @@ export type LandingPageWhereUniqueInput = Prisma.AtLeast<{
   htmlData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   cssData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   isActive?: Prisma.BoolFilter<"LandingPage"> | boolean
+  authorId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
+  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "slug">
 
 export type LandingPageOrderByWithAggregationInput = {
@@ -240,6 +253,7 @@ export type LandingPageOrderByWithAggregationInput = {
   htmlData?: Prisma.SortOrderInput | Prisma.SortOrder
   cssData?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LandingPageCountOrderByAggregateInput
@@ -257,6 +271,7 @@ export type LandingPageScalarWhereWithAggregatesInput = {
   htmlData?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   cssData?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"LandingPage"> | boolean
+  authorId?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"LandingPage"> | Date | string
 }
@@ -270,6 +285,7 @@ export type LandingPageCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  author?: Prisma.UserCreateNestedOneWithoutLandingPagesInput
 }
 
 export type LandingPageUncheckedCreateInput = {
@@ -279,6 +295,7 @@ export type LandingPageUncheckedCreateInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  authorId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -292,6 +309,7 @@ export type LandingPageUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  author?: Prisma.UserUpdateOneWithoutLandingPagesNestedInput
 }
 
 export type LandingPageUncheckedUpdateInput = {
@@ -301,6 +319,7 @@ export type LandingPageUncheckedUpdateInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -312,6 +331,7 @@ export type LandingPageCreateManyInput = {
   htmlData?: string | null
   cssData?: string | null
   isActive?: boolean
+  authorId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -334,8 +354,19 @@ export type LandingPageUncheckedUpdateManyInput = {
   htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LandingPageListRelationFilter = {
+  every?: Prisma.LandingPageWhereInput
+  some?: Prisma.LandingPageWhereInput
+  none?: Prisma.LandingPageWhereInput
+}
+
+export type LandingPageOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type LandingPageCountOrderByAggregateInput = {
@@ -345,6 +376,7 @@ export type LandingPageCountOrderByAggregateInput = {
   htmlData?: Prisma.SortOrder
   cssData?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -356,6 +388,7 @@ export type LandingPageMaxOrderByAggregateInput = {
   htmlData?: Prisma.SortOrder
   cssData?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -367,12 +400,162 @@ export type LandingPageMinOrderByAggregateInput = {
   htmlData?: Prisma.SortOrder
   cssData?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
+export type LandingPageCreateNestedManyWithoutAuthorInput = {
+  create?: Prisma.XOR<Prisma.LandingPageCreateWithoutAuthorInput, Prisma.LandingPageUncheckedCreateWithoutAuthorInput> | Prisma.LandingPageCreateWithoutAuthorInput[] | Prisma.LandingPageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.LandingPageCreateOrConnectWithoutAuthorInput | Prisma.LandingPageCreateOrConnectWithoutAuthorInput[]
+  createMany?: Prisma.LandingPageCreateManyAuthorInputEnvelope
+  connect?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+}
+
+export type LandingPageUncheckedCreateNestedManyWithoutAuthorInput = {
+  create?: Prisma.XOR<Prisma.LandingPageCreateWithoutAuthorInput, Prisma.LandingPageUncheckedCreateWithoutAuthorInput> | Prisma.LandingPageCreateWithoutAuthorInput[] | Prisma.LandingPageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.LandingPageCreateOrConnectWithoutAuthorInput | Prisma.LandingPageCreateOrConnectWithoutAuthorInput[]
+  createMany?: Prisma.LandingPageCreateManyAuthorInputEnvelope
+  connect?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+}
+
+export type LandingPageUpdateManyWithoutAuthorNestedInput = {
+  create?: Prisma.XOR<Prisma.LandingPageCreateWithoutAuthorInput, Prisma.LandingPageUncheckedCreateWithoutAuthorInput> | Prisma.LandingPageCreateWithoutAuthorInput[] | Prisma.LandingPageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.LandingPageCreateOrConnectWithoutAuthorInput | Prisma.LandingPageCreateOrConnectWithoutAuthorInput[]
+  upsert?: Prisma.LandingPageUpsertWithWhereUniqueWithoutAuthorInput | Prisma.LandingPageUpsertWithWhereUniqueWithoutAuthorInput[]
+  createMany?: Prisma.LandingPageCreateManyAuthorInputEnvelope
+  set?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  disconnect?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  delete?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  connect?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  update?: Prisma.LandingPageUpdateWithWhereUniqueWithoutAuthorInput | Prisma.LandingPageUpdateWithWhereUniqueWithoutAuthorInput[]
+  updateMany?: Prisma.LandingPageUpdateManyWithWhereWithoutAuthorInput | Prisma.LandingPageUpdateManyWithWhereWithoutAuthorInput[]
+  deleteMany?: Prisma.LandingPageScalarWhereInput | Prisma.LandingPageScalarWhereInput[]
+}
+
+export type LandingPageUncheckedUpdateManyWithoutAuthorNestedInput = {
+  create?: Prisma.XOR<Prisma.LandingPageCreateWithoutAuthorInput, Prisma.LandingPageUncheckedCreateWithoutAuthorInput> | Prisma.LandingPageCreateWithoutAuthorInput[] | Prisma.LandingPageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.LandingPageCreateOrConnectWithoutAuthorInput | Prisma.LandingPageCreateOrConnectWithoutAuthorInput[]
+  upsert?: Prisma.LandingPageUpsertWithWhereUniqueWithoutAuthorInput | Prisma.LandingPageUpsertWithWhereUniqueWithoutAuthorInput[]
+  createMany?: Prisma.LandingPageCreateManyAuthorInputEnvelope
+  set?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  disconnect?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  delete?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  connect?: Prisma.LandingPageWhereUniqueInput | Prisma.LandingPageWhereUniqueInput[]
+  update?: Prisma.LandingPageUpdateWithWhereUniqueWithoutAuthorInput | Prisma.LandingPageUpdateWithWhereUniqueWithoutAuthorInput[]
+  updateMany?: Prisma.LandingPageUpdateManyWithWhereWithoutAuthorInput | Prisma.LandingPageUpdateManyWithWhereWithoutAuthorInput[]
+  deleteMany?: Prisma.LandingPageScalarWhereInput | Prisma.LandingPageScalarWhereInput[]
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type LandingPageCreateWithoutAuthorInput = {
+  id?: string
+  title: string
+  slug: string
+  htmlData?: string | null
+  cssData?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LandingPageUncheckedCreateWithoutAuthorInput = {
+  id?: string
+  title: string
+  slug: string
+  htmlData?: string | null
+  cssData?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LandingPageCreateOrConnectWithoutAuthorInput = {
+  where: Prisma.LandingPageWhereUniqueInput
+  create: Prisma.XOR<Prisma.LandingPageCreateWithoutAuthorInput, Prisma.LandingPageUncheckedCreateWithoutAuthorInput>
+}
+
+export type LandingPageCreateManyAuthorInputEnvelope = {
+  data: Prisma.LandingPageCreateManyAuthorInput | Prisma.LandingPageCreateManyAuthorInput[]
+  skipDuplicates?: boolean
+}
+
+export type LandingPageUpsertWithWhereUniqueWithoutAuthorInput = {
+  where: Prisma.LandingPageWhereUniqueInput
+  update: Prisma.XOR<Prisma.LandingPageUpdateWithoutAuthorInput, Prisma.LandingPageUncheckedUpdateWithoutAuthorInput>
+  create: Prisma.XOR<Prisma.LandingPageCreateWithoutAuthorInput, Prisma.LandingPageUncheckedCreateWithoutAuthorInput>
+}
+
+export type LandingPageUpdateWithWhereUniqueWithoutAuthorInput = {
+  where: Prisma.LandingPageWhereUniqueInput
+  data: Prisma.XOR<Prisma.LandingPageUpdateWithoutAuthorInput, Prisma.LandingPageUncheckedUpdateWithoutAuthorInput>
+}
+
+export type LandingPageUpdateManyWithWhereWithoutAuthorInput = {
+  where: Prisma.LandingPageScalarWhereInput
+  data: Prisma.XOR<Prisma.LandingPageUpdateManyMutationInput, Prisma.LandingPageUncheckedUpdateManyWithoutAuthorInput>
+}
+
+export type LandingPageScalarWhereInput = {
+  AND?: Prisma.LandingPageScalarWhereInput | Prisma.LandingPageScalarWhereInput[]
+  OR?: Prisma.LandingPageScalarWhereInput[]
+  NOT?: Prisma.LandingPageScalarWhereInput | Prisma.LandingPageScalarWhereInput[]
+  id?: Prisma.StringFilter<"LandingPage"> | string
+  title?: Prisma.StringFilter<"LandingPage"> | string
+  slug?: Prisma.StringFilter<"LandingPage"> | string
+  htmlData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
+  cssData?: Prisma.StringNullableFilter<"LandingPage"> | string | null
+  isActive?: Prisma.BoolFilter<"LandingPage"> | boolean
+  authorId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
+}
+
+export type LandingPageCreateManyAuthorInput = {
+  id?: string
+  title: string
+  slug: string
+  htmlData?: string | null
+  cssData?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LandingPageUpdateWithoutAuthorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LandingPageUncheckedUpdateWithoutAuthorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LandingPageUncheckedUpdateManyWithoutAuthorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cssData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -384,8 +567,10 @@ export type LandingPageSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  author?: boolean | Prisma.LandingPage$authorArgs<ExtArgs>
 }, ExtArgs["result"]["landingPage"]>
 
 export type LandingPageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -395,8 +580,10 @@ export type LandingPageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  author?: boolean | Prisma.LandingPage$authorArgs<ExtArgs>
 }, ExtArgs["result"]["landingPage"]>
 
 export type LandingPageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -406,8 +593,10 @@ export type LandingPageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  author?: boolean | Prisma.LandingPage$authorArgs<ExtArgs>
 }, ExtArgs["result"]["landingPage"]>
 
 export type LandingPageSelectScalar = {
@@ -417,15 +606,27 @@ export type LandingPageSelectScalar = {
   htmlData?: boolean
   cssData?: boolean
   isActive?: boolean
+  authorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LandingPageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "htmlData" | "cssData" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["landingPage"]>
+export type LandingPageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "htmlData" | "cssData" | "isActive" | "authorId" | "createdAt" | "updatedAt", ExtArgs["result"]["landingPage"]>
+export type LandingPageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  author?: boolean | Prisma.LandingPage$authorArgs<ExtArgs>
+}
+export type LandingPageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  author?: boolean | Prisma.LandingPage$authorArgs<ExtArgs>
+}
+export type LandingPageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  author?: boolean | Prisma.LandingPage$authorArgs<ExtArgs>
+}
 
 export type $LandingPagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "LandingPage"
-  objects: {}
+  objects: {
+    author: Prisma.$UserPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
@@ -433,6 +634,7 @@ export type $LandingPagePayload<ExtArgs extends runtime.Types.Extensions.Interna
     htmlData: string | null
     cssData: string | null
     isActive: boolean
+    authorId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["landingPage"]>
@@ -829,6 +1031,7 @@ readonly fields: LandingPageFieldRefs;
  */
 export interface Prisma__LandingPageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  author<T extends Prisma.LandingPage$authorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LandingPage$authorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -864,6 +1067,7 @@ export interface LandingPageFieldRefs {
   readonly htmlData: Prisma.FieldRef<"LandingPage", 'String'>
   readonly cssData: Prisma.FieldRef<"LandingPage", 'String'>
   readonly isActive: Prisma.FieldRef<"LandingPage", 'Boolean'>
+  readonly authorId: Prisma.FieldRef<"LandingPage", 'String'>
   readonly createdAt: Prisma.FieldRef<"LandingPage", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"LandingPage", 'DateTime'>
 }
@@ -883,6 +1087,10 @@ export type LandingPageFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
+  /**
    * Filter, which LandingPage to fetch.
    */
   where: Prisma.LandingPageWhereUniqueInput
@@ -901,6 +1109,10 @@ export type LandingPageFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
+  /**
    * Filter, which LandingPage to fetch.
    */
   where: Prisma.LandingPageWhereUniqueInput
@@ -918,6 +1130,10 @@ export type LandingPageFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the LandingPage
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
   /**
    * Filter, which LandingPage to fetch.
    */
@@ -967,6 +1183,10 @@ export type LandingPageFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
+  /**
    * Filter, which LandingPage to fetch.
    */
   where?: Prisma.LandingPageWhereInput
@@ -1014,6 +1234,10 @@ export type LandingPageFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the LandingPage
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
   /**
    * Filter, which LandingPages to fetch.
    */
@@ -1063,6 +1287,10 @@ export type LandingPageCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
+  /**
    * The data needed to create a LandingPage.
    */
   data: Prisma.XOR<Prisma.LandingPageCreateInput, Prisma.LandingPageUncheckedCreateInput>
@@ -1096,6 +1324,10 @@ export type LandingPageCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    */
   data: Prisma.LandingPageCreateManyInput | Prisma.LandingPageCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1110,6 +1342,10 @@ export type LandingPageUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the LandingPage
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
   /**
    * The data needed to update a LandingPage.
    */
@@ -1162,6 +1398,10 @@ export type LandingPageUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many LandingPages to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1176,6 +1416,10 @@ export type LandingPageUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the LandingPage
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
   /**
    * The filter to search for the LandingPage to update in case it exists.
    */
@@ -1203,6 +1447,10 @@ export type LandingPageDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
+  /**
    * Filter which LandingPage to delete.
    */
   where: Prisma.LandingPageWhereUniqueInput
@@ -1223,6 +1471,25 @@ export type LandingPageDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
+ * LandingPage.author
+ */
+export type LandingPage$authorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
  * LandingPage without action
  */
 export type LandingPageDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1234,4 +1501,8 @@ export type LandingPageDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the LandingPage
    */
   omit?: Prisma.LandingPageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
 }

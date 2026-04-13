@@ -253,6 +253,7 @@ export type UserWhereInput = {
   tasks?: Prisma.TaskListRelationFilter
   enrollments?: Prisma.EnrollmentListRelationFilter
   certificates?: Prisma.CertificateListRelationFilter
+  landingPages?: Prisma.LandingPageListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -276,6 +277,7 @@ export type UserOrderByWithRelationInput = {
   tasks?: Prisma.TaskOrderByRelationAggregateInput
   enrollments?: Prisma.EnrollmentOrderByRelationAggregateInput
   certificates?: Prisma.CertificateOrderByRelationAggregateInput
+  landingPages?: Prisma.LandingPageOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -302,6 +304,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   tasks?: Prisma.TaskListRelationFilter
   enrollments?: Prisma.EnrollmentListRelationFilter
   certificates?: Prisma.CertificateListRelationFilter
+  landingPages?: Prisma.LandingPageListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -363,6 +366,7 @@ export type UserCreateInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -386,6 +390,7 @@ export type UserUncheckedCreateInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUpdateInput = {
@@ -409,6 +414,7 @@ export type UserUpdateInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -432,6 +438,7 @@ export type UserUncheckedUpdateInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -535,6 +542,11 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -595,6 +607,22 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutSessionsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
+}
+
+export type UserCreateNestedOneWithoutLandingPagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLandingPagesInput, Prisma.UserUncheckedCreateWithoutLandingPagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLandingPagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutLandingPagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLandingPagesInput, Prisma.UserUncheckedCreateWithoutLandingPagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLandingPagesInput
+  upsert?: Prisma.UserUpsertWithoutLandingPagesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLandingPagesInput, Prisma.UserUpdateWithoutLandingPagesInput>, Prisma.UserUncheckedUpdateWithoutLandingPagesInput>
 }
 
 export type UserCreateNestedOneWithoutTasksInput = {
@@ -673,6 +701,7 @@ export type UserCreateWithoutAccountsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -695,6 +724,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -733,6 +763,7 @@ export type UserUpdateWithoutAccountsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -755,6 +786,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutApiKeyIntegrationsInput = {
@@ -777,6 +809,7 @@ export type UserCreateWithoutApiKeyIntegrationsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutApiKeyIntegrationsInput = {
@@ -799,6 +832,7 @@ export type UserUncheckedCreateWithoutApiKeyIntegrationsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutApiKeyIntegrationsInput = {
@@ -837,6 +871,7 @@ export type UserUpdateWithoutApiKeyIntegrationsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApiKeyIntegrationsInput = {
@@ -859,6 +894,7 @@ export type UserUncheckedUpdateWithoutApiKeyIntegrationsInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -881,6 +917,7 @@ export type UserCreateWithoutSessionsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -903,6 +940,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -941,6 +979,7 @@ export type UserUpdateWithoutSessionsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -958,6 +997,223 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   jiraSelectedProjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jiraSelectedCloudId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationUncheckedUpdateManyWithoutUserNestedInput
+  organizedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutOrganizerNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserCreateWithoutLandingPagesInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  password?: string | null
+  timezone?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  jiraSelectedProjectKey?: string | null
+  jiraSelectedProjectName?: string | null
+  jiraSelectedCloudId?: string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationCreateNestedManyWithoutUserInput
+  organizedMeetings?: Prisma.MeetingCreateNestedManyWithoutOrganizerInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutLandingPagesInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  password?: string | null
+  timezone?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  jiraSelectedProjectKey?: string | null
+  jiraSelectedProjectName?: string | null
+  jiraSelectedCloudId?: string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationUncheckedCreateNestedManyWithoutUserInput
+  organizedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutOrganizerInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutLandingPagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLandingPagesInput, Prisma.UserUncheckedCreateWithoutLandingPagesInput>
+}
+
+export type UserUpsertWithoutLandingPagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLandingPagesInput, Prisma.UserUncheckedUpdateWithoutLandingPagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLandingPagesInput, Prisma.UserUncheckedCreateWithoutLandingPagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLandingPagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLandingPagesInput, Prisma.UserUncheckedUpdateWithoutLandingPagesInput>
+}
+
+export type UserUpdateWithoutLandingPagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jiraSelectedProjectKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedProjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedCloudId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationUpdateManyWithoutUserNestedInput
+  organizedMeetings?: Prisma.MeetingUpdateManyWithoutOrganizerNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLandingPagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jiraSelectedProjectKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedProjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedCloudId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationUncheckedUpdateManyWithoutUserNestedInput
+  organizedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutOrganizerNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutTasksInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  password?: string | null
+  timezone?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  jiraSelectedProjectKey?: string | null
+  jiraSelectedProjectName?: string | null
+  jiraSelectedCloudId?: string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationCreateNestedManyWithoutUserInput
+  organizedMeetings?: Prisma.MeetingCreateNestedManyWithoutOrganizerInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutTasksInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  password?: string | null
+  timezone?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  role?: $Enums.Role
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  jiraSelectedProjectKey?: string | null
+  jiraSelectedProjectName?: string | null
+  jiraSelectedCloudId?: string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationUncheckedCreateNestedManyWithoutUserInput
+  organizedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutOrganizerInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutTasksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput>
+}
+
+export type UserUpsertWithoutTasksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTasksInput, Prisma.UserUncheckedUpdateWithoutTasksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTasksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTasksInput, Prisma.UserUncheckedUpdateWithoutTasksInput>
+}
+
+export type UserUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jiraSelectedProjectKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedProjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedCloudId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  apiKeyIntegrations?: Prisma.ApiKeyIntegrationUpdateManyWithoutUserNestedInput
+  organizedMeetings?: Prisma.MeetingUpdateManyWithoutOrganizerNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jiraSelectedProjectKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedProjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraSelectedCloudId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   apiKeyIntegrations?: Prisma.ApiKeyIntegrationUncheckedUpdateManyWithoutUserNestedInput
   organizedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutOrganizerNestedInput
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
@@ -1067,6 +1323,7 @@ export type UserUncheckedUpdateWithoutTasksInput = {
   organizedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutOrganizerNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -1089,6 +1346,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   organizedMeetings?: Prisma.MeetingCreateNestedManyWithoutOrganizerInput
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -1111,6 +1369,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   organizedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutOrganizerInput
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -1149,6 +1408,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   organizedMeetings?: Prisma.MeetingUpdateManyWithoutOrganizerNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -1171,6 +1431,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   organizedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutOrganizerNestedInput
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutCertificatesInput = {
@@ -1193,6 +1454,7 @@ export type UserCreateWithoutCertificatesInput = {
   organizedMeetings?: Prisma.MeetingCreateNestedManyWithoutOrganizerInput
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutCertificatesInput = {
@@ -1215,6 +1477,7 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   organizedMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutOrganizerInput
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutCertificatesInput = {
@@ -1253,6 +1516,7 @@ export type UserUpdateWithoutCertificatesInput = {
   organizedMeetings?: Prisma.MeetingUpdateManyWithoutOrganizerNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCertificatesInput = {
@@ -1275,6 +1539,7 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   organizedMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutOrganizerNestedInput
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutOrganizedMeetingsInput = {
@@ -1297,6 +1562,7 @@ export type UserCreateWithoutOrganizedMeetingsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutOrganizedMeetingsInput = {
@@ -1319,6 +1585,7 @@ export type UserUncheckedCreateWithoutOrganizedMeetingsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutOrganizedMeetingsInput = {
@@ -1357,6 +1624,7 @@ export type UserUpdateWithoutOrganizedMeetingsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrganizedMeetingsInput = {
@@ -1379,6 +1647,7 @@ export type UserUncheckedUpdateWithoutOrganizedMeetingsInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 
@@ -1394,6 +1663,7 @@ export type UserCountOutputType = {
   tasks: number
   enrollments: number
   certificates: number
+  landingPages: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1404,6 +1674,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   tasks?: boolean | UserCountOutputTypeCountTasksArgs
   enrollments?: boolean | UserCountOutputTypeCountEnrollmentsArgs
   certificates?: boolean | UserCountOutputTypeCountCertificatesArgs
+  landingPages?: boolean | UserCountOutputTypeCountLandingPagesArgs
 }
 
 /**
@@ -1465,6 +1736,13 @@ export type UserCountOutputTypeCountCertificatesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.CertificateWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountLandingPagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LandingPageWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1487,6 +1765,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
   enrollments?: boolean | Prisma.User$enrollmentsArgs<ExtArgs>
   certificates?: boolean | Prisma.User$certificatesArgs<ExtArgs>
+  landingPages?: boolean | Prisma.User$landingPagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1547,6 +1826,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
   enrollments?: boolean | Prisma.User$enrollmentsArgs<ExtArgs>
   certificates?: boolean | Prisma.User$certificatesArgs<ExtArgs>
+  landingPages?: boolean | Prisma.User$landingPagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1562,6 +1842,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     tasks: Prisma.$TaskPayload<ExtArgs>[]
     enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
     certificates: Prisma.$CertificatePayload<ExtArgs>[]
+    landingPages: Prisma.$LandingPagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1978,6 +2259,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   tasks<T extends Prisma.User$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   enrollments<T extends Prisma.User$enrollmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   certificates<T extends Prisma.User$certificatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$certificatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CertificatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  landingPages<T extends Prisma.User$landingPagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$landingPagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LandingPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2578,6 +2860,30 @@ export type User$certificatesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.CertificateScalarFieldEnum | Prisma.CertificateScalarFieldEnum[]
+}
+
+/**
+ * User.landingPages
+ */
+export type User$landingPagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LandingPage
+   */
+  select?: Prisma.LandingPageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LandingPage
+   */
+  omit?: Prisma.LandingPageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
+  where?: Prisma.LandingPageWhereInput
+  orderBy?: Prisma.LandingPageOrderByWithRelationInput | Prisma.LandingPageOrderByWithRelationInput[]
+  cursor?: Prisma.LandingPageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LandingPageScalarFieldEnum | Prisma.LandingPageScalarFieldEnum[]
 }
 
 /**

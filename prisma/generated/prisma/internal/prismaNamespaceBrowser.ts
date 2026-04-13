@@ -198,6 +198,7 @@ export const LandingPageScalarFieldEnum = {
   htmlData: 'htmlData',
   cssData: 'cssData',
   isActive: 'isActive',
+  authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
