@@ -68,6 +68,7 @@ export const ModelName = {
   LessonResource: 'LessonResource',
   Enrollment: 'Enrollment',
   Certificate: 'Certificate',
+  LessonCompletion: 'LessonCompletion',
   Document: 'Document',
   Meeting: 'Meeting',
   CustomField: 'CustomField'
@@ -300,6 +301,16 @@ export const CertificateScalarFieldEnum = {
 } as const
 
 export type CertificateScalarFieldEnum = (typeof CertificateScalarFieldEnum)[keyof typeof CertificateScalarFieldEnum]
+
+
+export const LessonCompletionScalarFieldEnum = {
+  id: 'id',
+  enrollmentId: 'enrollmentId',
+  lessonId: 'lessonId',
+  completedAt: 'completedAt'
+} as const
+
+export type LessonCompletionScalarFieldEnum = (typeof LessonCompletionScalarFieldEnum)[keyof typeof LessonCompletionScalarFieldEnum]
 
 
 export const DocumentScalarFieldEnum = {
