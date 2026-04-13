@@ -33,6 +33,16 @@ import {
 import { cn } from "@/lib/utils";
 import { getLeads, getDashboardStats } from "@/app/actions/leadActions";
 import LeadProfileSheet from "@/components/crm/lead-profile/LeadProfileSheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+
+import LeadForm from "@/components/crm/LeadForm";
 
 const STATUS_LABELS = {
   NEW: "Nowy",
@@ -157,14 +167,30 @@ export default function DashboardPage() {
             />
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           </div>
-          <Button
-            variant="outline"
-            size="default"
-            className="w-fit rounded-lg border-primary/40"
-          >
-            <UserPlus className="mr-2 size-4" />
-            Dodaj leada
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="default"
+                className="w-fit rounded-lg border-primary/40"
+              >
+                <UserPlus className="mr-2 size-4" />
+                Dodaj leada
+              </Button>
+            </DialogTrigger>
+            
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="text-xl">Dodaj nowego leada</DialogTitle>
+              </DialogHeader>
+              
+              {/* Tu ładujemy Twój gotowy formularz! */}
+              <div className="mt-4">
+                <LeadForm />
+              </div>
+              
+            </DialogContent>
+          </Dialog>
           
           {/* 4. PODPIĘCIE: Dropdown do filtrowania statusów (Shadcn używa onValueChange) */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
