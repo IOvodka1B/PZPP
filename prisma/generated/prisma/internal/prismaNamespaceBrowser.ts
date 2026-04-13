@@ -61,6 +61,7 @@ export const ModelName = {
   Note: 'Note',
   LandingPage: 'LandingPage',
   Message: 'Message',
+  Task: 'Task',
   Course: 'Course',
   Module: 'Module',
   Lesson: 'Lesson',
@@ -98,7 +99,10 @@ export const UserScalarFieldEnum = {
   image: 'image',
   role: 'role',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  jiraSelectedProjectKey: 'jiraSelectedProjectKey',
+  jiraSelectedProjectName: 'jiraSelectedProjectName',
+  jiraSelectedCloudId: 'jiraSelectedCloudId'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -193,6 +197,7 @@ export const LandingPageScalarFieldEnum = {
   htmlData: 'htmlData',
   cssData: 'cssData',
   isActive: 'isActive',
+  authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -211,6 +216,21 @@ export const MessageScalarFieldEnum = {
 } as const
 
 export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const TaskScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  dueDate: 'dueDate',
+  isCompleted: 'isCompleted',
+  leadId: 'leadId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
 
 
 export const CourseScalarFieldEnum = {

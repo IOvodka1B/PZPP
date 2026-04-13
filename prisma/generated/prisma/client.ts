@@ -92,6 +92,11 @@ export type LandingPage = Prisma.LandingPageModel
  */
 export type Message = Prisma.MessageModel
 /**
+ * Model Task
+ * 
+ */
+export type Task = Prisma.TaskModel
+/**
  * Model Course
  * 
  */
