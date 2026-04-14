@@ -115,8 +115,5 @@
     "tailwindcss": "^4",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   }
 }
