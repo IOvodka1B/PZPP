@@ -13,6 +13,13 @@ enum Role {
   UCZESTNIK
 }
 
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELED
+}
+
 model User {
   id                      String    @id @default(cuid())
   name                    String?
@@ -44,6 +51,7 @@ model User {
   tags             Tag[]         @relation("TagOwner")
   courses           Course[]
   funnels           Funnel[]      @relation("FunnelOwner")
+  orders            Order[]
 }
 
 model Account {
@@ -313,8 +321,28 @@ model Course {
 
   modules     Module[]
   enrollments Enrollment[]
+  orders      Order[]
 
   @@index([authorId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  stripeSessionId String      @unique
+  amount          Int
+  status          OrderStatus @default(PENDING)
+
+  userId   String?
+  user     User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
 }
 
 model Module {

@@ -67,6 +67,7 @@ export const ModelName = {
   Message: 'Message',
   Task: 'Task',
   Course: 'Course',
+  Order: 'Order',
   Module: 'Module',
   Lesson: 'Lesson',
   StudentLessonNote: 'StudentLessonNote',
@@ -314,6 +315,20 @@ export const CourseScalarFieldEnum = {
 } as const
 
 export type CourseScalarFieldEnum = (typeof CourseScalarFieldEnum)[keyof typeof CourseScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  stripeSessionId: 'stripeSessionId',
+  amount: 'amount',
+  status: 'status',
+  userId: 'userId',
+  courseId: 'courseId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
 export const ModuleScalarFieldEnum = {

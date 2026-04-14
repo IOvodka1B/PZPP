@@ -41,6 +41,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pl" className="scroll-smooth" suppressHydrationWarning={true}>
       <body
+        suppressHydrationWarning={true}
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <AppProviders>

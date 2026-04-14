@@ -18,6 +18,16 @@ export const Role = {
 export type Role = (typeof Role)[keyof typeof Role]
 
 
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELED: 'CANCELED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
 export const LeadStatus = {
   NEW: 'NEW',
   CONTACTED: 'CONTACTED',
