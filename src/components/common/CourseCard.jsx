@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 
 export default function CourseCard({ course, onOpenCourse }) {
   const showProgress = typeof course.progress === 'number'
+  const isUnavailable = course?.isPublished === false
 
   return (
     <article>
@@ -45,7 +46,7 @@ export default function CourseCard({ course, onOpenCourse }) {
             className="h-8 rounded-md bg-[#0f172a] px-3 text-xs font-semibold text-white hover:bg-[#1e293b]"
             onClick={() => onOpenCourse(course)}
           >
-            {course.actionLabel}
+            {isUnavailable ? 'Niedostępny' : course.actionLabel}
           </Button>
         </CardFooter>
       </Card>
