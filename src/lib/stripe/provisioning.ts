@@ -121,6 +121,7 @@ export async function provisionPaidCheckout(params: {
       loginEmail: result.loginEmail,
       temporaryPassword: result.temporaryPassword,
       temporaryNickname: result.temporaryNickname,
+      userCreated: result.userCreated,
     };
 
     const subject = getCourseEnrollmentConfirmationSubject(props);
