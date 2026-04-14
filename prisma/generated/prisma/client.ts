@@ -122,6 +122,11 @@ export type Task = Prisma.TaskModel
  */
 export type Course = Prisma.CourseModel
 /**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
  * Model Module
  * 
  */
