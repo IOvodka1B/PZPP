@@ -12,7 +12,8 @@ function getStripe() {
   return new Stripe(stripeSecretKey, { apiVersion: "2026-03-25.dahlia" });
 }
 
-async function createCheckoutUrl(courseId: string, origin: string) {
+async function createCheckoutUrl(params: { courseId: string; origin: string }) {
+  const { courseId, origin } = params;
   const course = await prisma.course.findUnique({
     where: { id: courseId },
     select: { id: true, title: true, price: true },
@@ -44,7 +45,7 @@ async function createCheckoutUrl(courseId: string, origin: string) {
         quantity: 1,
       },
     ],
-    success_url: `${origin}/?stripe=success`,
+    success_url: `${origin}/stripe/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/?stripe=cancel`,
     metadata: {
       courseId: course.id,
@@ -54,6 +55,15 @@ async function createCheckoutUrl(courseId: string, origin: string) {
   if (!session.url) {
     return { ok: false as const, error: "Nie udało się utworzyć sesji Stripe." };
   }
+
+  await prisma.order.create({
+    data: {
+      stripeSessionId: session.id,
+      amount: unitAmount,
+      status: "PENDING",
+      courseId: course.id,
+    },
+  });
 
   return { ok: true as const, url: session.url };
 }
@@ -66,7 +76,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "courseId jest wymagane." }, { status: 400 });
     }
 
-    const result = await createCheckoutUrl(courseId, origin);
+    const result = await createCheckoutUrl({ courseId, origin });
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
@@ -74,7 +84,13 @@ export async function GET(req: Request) {
     return NextResponse.redirect(result.url, { status: 303 });
   } catch (error) {
     console.error("stripe checkout GET:", error);
-    return NextResponse.json({ error: "Błąd tworzenia płatności." }, { status: 500 });
+    const details =
+      process.env.NODE_ENV !== "production"
+        ? typeof (error as any)?.message === "string"
+          ? (error as any).message
+          : String(error)
+        : undefined;
+    return NextResponse.json({ error: "Błąd tworzenia płatności.", details }, { status: 500 });
   }
 }
 
@@ -87,7 +103,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "courseId jest wymagane." }, { status: 400 });
     }
 
-    const result = await createCheckoutUrl(courseId, origin);
+    const result = await createCheckoutUrl({ courseId, origin });
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
@@ -95,7 +111,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: result.url });
   } catch (error) {
     console.error("stripe checkout POST:", error);
-    return NextResponse.json({ error: "Błąd tworzenia płatności." }, { status: 500 });
+    const details =
+      process.env.NODE_ENV !== "production"
+        ? typeof (error as any)?.message === "string"
+          ? (error as any).message
+          : String(error)
+        : undefined;
+    return NextResponse.json({ error: "Błąd tworzenia płatności.", details }, { status: 500 });
   }
 }
 
