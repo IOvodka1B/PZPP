@@ -42,7 +42,9 @@ export default function GrapesEditor({ landingId }) {
       (async () => {
         // Pobieramy kursy kreatora do traitów "Kup Teraz"
         const loadedCourses = await getCourses().catch(() => []);
-        const coursesForTraits = Array.isArray(loadedCourses) ? loadedCourses : [];
+        const coursesForTraits = Array.isArray(loadedCourses)
+          ? loadedCourses.filter((c) => Boolean(c?.isPublished))
+          : [];
         setCourses(coursesForTraits);
 
         const editor = grapesjs.init({

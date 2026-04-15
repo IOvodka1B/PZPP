@@ -27,6 +27,7 @@ export async function getStudentCourses(userId) {
 
     const courses = enrollments.map((e) => {
       const progress = Math.min(100, Math.max(0, e.progress))
+      const isPublished = Boolean(e.course?.isPublished)
       return {
         enrollmentId: e.id,
         id: e.course.id,
@@ -34,7 +35,8 @@ export async function getStudentCourses(userId) {
         description: e.course.description ?? '',
         lessonsCount: lessonsCount(e.course),
         progress,
-        actionLabel: progress >= 100 ? 'Przejrzyj' : 'Kontynuuj',
+        isPublished,
+        actionLabel: !isPublished ? 'Niedostępny' : progress >= 100 ? 'Przejrzyj' : 'Kontynuuj',
       }
     })
 

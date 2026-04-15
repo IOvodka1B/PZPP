@@ -7,8 +7,17 @@ export function getSubject({ courseTitle } = {}) {
 }
 
 export default function CourseEnrollmentConfirmation(props) {
-  const { userName, courseTitle, loginUrl, settingsUrl, loginEmail, temporaryPassword, temporaryNickname } = props || {};
-  const showCredentials = Boolean(loginEmail) && Boolean(temporaryPassword);
+  const {
+    userName,
+    courseTitle,
+    loginUrl,
+    settingsUrl,
+    loginEmail,
+    temporaryPassword,
+    temporaryNickname,
+    userCreated,
+  } = props || {};
+  const showCredentials = Boolean(loginEmail) && Boolean(temporaryPassword) && Boolean(userCreated);
 
   return (
     <Layout preheader="Potwierdzamy dostęp do kursu">
@@ -31,6 +40,12 @@ export default function CourseEnrollmentConfirmation(props) {
         <Text style={{ fontSize: "14px", lineHeight: "22px", margin: "14px 0 0", color: "#344054" }}>
           Zaloguj się, aby rozpocząć naukę.
         </Text>
+
+        {!showCredentials ? (
+          <Text style={{ fontSize: "12px", lineHeight: "18px", margin: "10px 0 0", color: "#667085" }}>
+            Jeśli masz już konto w platformie, użyj swojego dotychczasowego loginu i hasła.
+          </Text>
+        ) : null}
 
         {showCredentials ? (
           <Section style={{ paddingTop: 14 }}>

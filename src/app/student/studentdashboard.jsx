@@ -26,6 +26,14 @@ export default function StudentDashboard({ courses, errorMessage = null }) {
   }, [errorMessage, toast])
 
   const handleOpenCourse = (course) => {
+    if (course && course.isPublished === false) {
+      toast({
+        variant: 'destructive',
+        title: 'Kurs jeszcze nieopublikowany',
+        description: 'Ten kurs nie został jeszcze opublikowany przez kreatora. Spróbuj ponownie później.',
+      })
+      return
+    }
     router.push(`/student/kurs/${course.id}`)
   }
 

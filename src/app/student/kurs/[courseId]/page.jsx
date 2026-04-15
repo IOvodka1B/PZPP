@@ -52,6 +52,7 @@ function getYoutubeIdFromUrl(url) {
 export default async function StudentCoursePage({ params, searchParams }) {
   const { courseId } = await params
   const normalizedCourseId = getNormalizedId(courseId)
+  const resolvedSearchParams = (await Promise.resolve(searchParams)) || {}
   const auth = await requireStudentOrAdmin()
   if (!auth.ok) notFound()
 
@@ -94,13 +95,12 @@ export default async function StudentCoursePage({ params, searchParams }) {
 
   if (!course) notFound()
   if (!course.isPublished && !isAdminRole(auth.role)) notFound()
-
   if (!isAdminRole(auth.role) && !enrollment) notFound()
 
   const courseTitle = course.title || 'Kurs'
   const modules = course.modules ?? []
 
-  const lessonIdParam = searchParams?.lessonId
+  const lessonIdParam = resolvedSearchParams?.lessonId
   const normalizedLessonId = Array.isArray(lessonIdParam) ? lessonIdParam[0] : lessonIdParam
 
   const firstModule = modules[0]
@@ -298,8 +298,21 @@ export default async function StudentCoursePage({ params, searchParams }) {
         {/* Środkowa kolumna - odtwarzacz i notatki */}
         <section className="space-y-4">
           <div className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <h2 className="text-lg font-semibold text-[#0f172a]">{videoTitle}</h2>
+            {(activeLesson.content || '').trim() ? (
+              <div className="mt-3 rounded-lg border border-[#e5e7eb] bg-[#fafafa] p-4">
+                <div
+                  className="prose prose-sm max-w-none text-[#0f172a]"
+                  // eslint-disable-next-line react/no-danger
+                  dangerouslySetInnerHTML={{ __html: activeLesson.content }}
+                />
+              </div>
+            ) : null}
+
             {youtubeId ? (
-              <CourseYouTubePlayer youtubeId={youtubeId} ariaLabel={videoTitle} />
+              <div className="mt-4">
+                <CourseYouTubePlayer youtubeId={youtubeId} ariaLabel={videoTitle} />
+              </div>
             ) : activeLesson.videoUrl ? (
               <div className="rounded-lg border border-[#e5e7eb] bg-[#fafafa] p-4 text-sm">
                 <div className="font-semibold text-[#0f172a]">Wideo</div>
