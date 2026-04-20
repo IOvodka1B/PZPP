@@ -1,48 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-
-function assertTokenAvailability(account) {
-  if (!account?.access_token) {
-    throw new Error("Brak tokenu dostępu dla tej integracji.");
-  }
-
-  if (!account?.expires_at) {
-    return;
-  }
-
-  const nowInSeconds = Math.floor(Date.now() / 1000);
-  if (account.expires_at <= nowInSeconds) {
-    // TODO: W tym miejscu zespół powinien wdrożyć Refresh Token Rotation
-    // (użycie refresh_token, wymiana access_token i aktualizacja rekordu Account).
-    throw new Error("Token wygasł. Wymagane odświeżenie autoryzacji.");
-  }
-}
-
-async function getOAuthAccountOrThrow(userId, provider) {
-  if (!userId) {
-    throw new Error("Brak userId.");
-  }
-
-  const account = await prisma.account.findFirst({
-    where: {
-      userId,
-      provider,
-    },
-    select: {
-      access_token: true,
-      refresh_token: true,
-      expires_at: true,
-    },
-  });
-
-  if (!account) {
-    throw new Error(`Brak podłączonej integracji OAuth dla: ${provider}.`);
-  }
-
-  assertTokenAvailability(account);
-  return account;
-}
+import { getOAuthAccountOrThrow } from "@/lib/integrations/oauthAccounts";
+import { fetchJiraIssuesForUser } from "@/lib/integrations/jiraClient";
 
 export async function fetchGoogleCalendar(userId) {
   try {
@@ -109,80 +69,29 @@ export async function fetchOutlookMails(userId) {
 
 export async function fetchJiraIssues(userId) {
   try {
-    const account = await getOAuthAccountOrThrow(userId, "atlassian");
-
-    const resourcesResponse = await fetch(
-      "https://api.atlassian.com/oauth/token/accessible-resources",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${account.access_token}`,
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (resourcesResponse.status === 401) {
-      // TODO: Tutaj należy uruchomić flow odświeżenia tokenu i ponowić request.
-      throw new Error("Brak autoryzacji Atlassian API (401).");
-    }
-
-    if (!resourcesResponse.ok) {
-      const body = await resourcesResponse.text();
-      throw new Error(`Atlassian resources error: ${resourcesResponse.status} ${body}`);
-    }
-
-    const resources = await resourcesResponse.json();
-    const firstResource = Array.isArray(resources) ? resources[0] : null;
-    const cloudId = firstResource?.id || null;
-    const siteUrl = firstResource?.url || null;
-    if (!cloudId) return [];
-
-    const query = new URLSearchParams({
-      jql: "assignee = currentUser() ORDER BY updated DESC",
-      maxResults: "25",
-      fields: "summary,status,assignee,updated",
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        jiraSelectedProjectKey: true,
+      },
     });
 
-    const issuesResponse = await fetch(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search?${query.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${account.access_token}`,
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (issuesResponse.status === 401) {
-      // TODO: Tutaj należy uruchomić flow odświeżenia tokenu i ponowić request.
-      throw new Error("Brak autoryzacji Jira API (401).");
-    }
-
-    if (!issuesResponse.ok) {
-      const body = await issuesResponse.text();
-      throw new Error(`Jira search error: ${issuesResponse.status} ${body}`);
-    }
-
-    const data = await issuesResponse.json();
-    const issues = Array.isArray(data?.issues) ? data.issues : [];
-
-    return issues.map((issue) => ({
-      id: issue.id,
-      key: issue.key,
-      summary: issue?.fields?.summary || "Brak tytułu",
-      status: issue?.fields?.status?.name || "Unknown",
-      updatedAt: issue?.fields?.updated || null,
-      url: siteUrl ? `${siteUrl}/browse/${issue.key}` : null,
-    }));
+    const jql = user?.jiraSelectedProjectKey
+      ? `project = ${user.jiraSelectedProjectKey} ORDER BY updated DESC`
+      : "assignee = currentUser() ORDER BY updated DESC";
+    return await fetchJiraIssuesForUser({
+      userId,
+      jql,
+      maxResults: 25,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
 
     // Brak OAuth Jira jest scenariuszem opcjonalnym - zwracamy pusta liste.
-    if (message.includes("Brak podłączonej integracji OAuth dla: atlassian")) {
+    if (
+      message.includes("Brak podłączonej integracji OAuth dla: atlassian") ||
+      message.includes("Brak aktywnej integracji Jira")
+    ) {
       return [];
     }
 
