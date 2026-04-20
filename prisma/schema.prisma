@@ -78,6 +78,8 @@ model User {
   automationRules   AutomationRule[]   @relation("AutomationOwner")
 
   notifications     Notification[]
+  assignedMessages  Message[]          @relation("MessageAssignee")
+  internalComments  InternalComment[]  @relation("InternalCommentAuthor")
 }
 
 model Account {
@@ -177,6 +179,7 @@ model Notification {
 
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, type, entityId])
   @@index([userId, createdAt])
   @@index([userId, readAt])
 }
@@ -392,9 +395,16 @@ model Message {
   body      String   @db.Text
   type      String //np. 'EMAIL'
   direction String //'INBOUND' (od leada), 'OUTBOUND' (do leada)
+  threadId  String?
+  status    String?  @default("OPEN")
+  assignedToId String?
   leadId    String
   lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  assignedTo User?   @relation("MessageAssignee", fields: [assignedToId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([threadId])
+  @@index([assignedToId])
 }
 
 model Task {
@@ -665,16 +675,42 @@ model Meeting {
   startTime DateTime // Format UTC
   endTime   DateTime
   meetLink  String? // Wirtualny pokój, np. Zoom/Meet
+  googleEventId  String?
+  outlookEventId String?
 
   organizerId String
   organizer   User   @relation("MeetingOrganizer", fields: [organizerId], references: [id])
 
   leadId String?
   lead   Lead?   @relation(fields: [leadId], references: [id])
+  reminders MeetingReminder[]
 
   createdAt DateTime @default(now())
 
   @@unique([organizerId, startTime])
+}
+
+model MeetingReminder {
+  id        String   @id @default(cuid())
+  meetingId String
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  type      String
+  sentAt    DateTime @default(now())
+
+  @@index([meetingId, type])
+}
+
+model InternalComment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  authorId  String
+  threadId  String
+
+  author User @relation("InternalCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@index([authorId])
 }
 
 model CustomField {

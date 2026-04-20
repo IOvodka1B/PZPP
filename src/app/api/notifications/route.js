@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import {
   createNotification,
   NOTIFICATION_TYPES,
@@ -66,25 +65,22 @@ export async function POST(request) {
         return NextResponse.json({ success: false, error: "Missing eventId/title" }, { status: 400 });
       }
 
-      // De-dupe: if we already have a notification for this event, skip.
-      const exists = await prisma.notification.findFirst({
-        where: {
+      try {
+        await createNotification({
           userId,
           type: NOTIFICATION_TYPES.CALENDAR_EVENT_CREATED,
+          title: source ? `Nowe wydarzenie (${source})` : "Nowe wydarzenie",
+          body: title,
+          url,
           entityId: eventId,
-        },
-        select: { id: true },
-      });
-      if (exists) return NextResponse.json({ success: true, skipped: true });
-
-      await createNotification({
-        userId,
-        type: NOTIFICATION_TYPES.CALENDAR_EVENT_CREATED,
-        title: source ? `Nowe wydarzenie (${source})` : "Nowe wydarzenie",
-        body: title,
-        url,
-        entityId: eventId,
-      });
+        });
+      } catch (dupError) {
+        // P2002 = unique constraint violation – notification already exists, skip silently
+        if (dupError?.code === "P2002") {
+          return NextResponse.json({ success: true, skipped: true });
+        }
+        throw dupError;
+      }
 
       return NextResponse.json({ success: true });
     }

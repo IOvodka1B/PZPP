@@ -41,8 +41,12 @@ DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
-    FROM pg_constraint
-    WHERE conname = 'Notification_userId_fkey'
+    FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    JOIN pg_namespace n ON n.oid = t.relnamespace
+    WHERE c.conname = 'Notification_userId_fkey'
+      AND n.nspname = 'public'
+      AND t.relname = 'Notification'
   ) THEN
     ALTER TABLE public."Notification"
       ADD CONSTRAINT "Notification_userId_fkey"
