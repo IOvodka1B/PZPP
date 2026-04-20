@@ -20,7 +20,7 @@ function optimisticallyMoveLead(leads, leadId, newStatus) {
 }
 
 // Kontener glownej tablicy Kanban dla leadow.
-export default function KanbanBoard({ jiraIssues = [] }) {
+export default function KanbanBoard({ jiraIssues = [], jiraSelectedProjectKey = null }) {
   const queryClient = useQueryClient();
 
   const { data: leads = [], isLoading } = useQuery({
@@ -100,9 +100,16 @@ export default function KanbanBoard({ jiraIssues = [] }) {
               <Ticket className="size-4 text-blue-700" />
               Zadania Jira (read-only)
             </h3>
-            <span className="rounded-full border border-blue-200 bg-white px-2.5 py-1 text-xs font-medium text-blue-700">
-              {jiraIssues.length}
-            </span>
+            <div className="flex items-center gap-2">
+              {jiraSelectedProjectKey ? (
+                <span className="rounded-full border border-blue-200 bg-white px-2.5 py-1 text-xs font-medium text-blue-700">
+                  Projekt: {jiraSelectedProjectKey}
+                </span>
+              ) : null}
+              <span className="rounded-full border border-blue-200 bg-white px-2.5 py-1 text-xs font-medium text-blue-700">
+                {jiraIssues.length}
+              </span>
+            </div>
           </div>
 
           {jiraIssues.length < 1 ? (

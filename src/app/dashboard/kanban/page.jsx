@@ -2,6 +2,7 @@ import KanbanBoard from "@/components/features/kanbanboard/KanbanBoard";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { fetchJiraIssues } from "@/app/actions/externalApiActions";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Strona widoku Kanban dla leadow.
@@ -9,16 +10,26 @@ import { fetchJiraIssues } from "@/app/actions/externalApiActions";
  */
 export default async function KanbanPage() {
   let jiraIssues = [];
+  let jiraSelectedProjectKey = null;
 
   try {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
     if (userId) {
-      jiraIssues = await fetchJiraIssues(userId);
+      const [issues, user] = await Promise.all([
+        fetchJiraIssues(userId),
+        prisma.user.findUnique({
+          where: { id: userId },
+          select: { jiraSelectedProjectKey: true },
+        }),
+      ]);
+      jiraIssues = issues;
+      jiraSelectedProjectKey = user?.jiraSelectedProjectKey || null;
     }
   } catch (error) {
     console.error("KanbanPage.fetchJiraIssues:", error);
     jiraIssues = [];
+    jiraSelectedProjectKey = null;
   }
 
   return (
@@ -29,7 +40,7 @@ export default async function KanbanPage() {
           Przeciągaj leady pomiedzy kolumnami Nowe, W trakcie uzgadniania i Sprzedane.
         </p>
       </header>
-      <KanbanBoard jiraIssues={jiraIssues} />
+      <KanbanBoard jiraIssues={jiraIssues} jiraSelectedProjectKey={jiraSelectedProjectKey} />
     </section>
   );
 }
