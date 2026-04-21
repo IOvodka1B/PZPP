@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function LessonQuiz({ lessonId, questions = [] }) {
-  const [answers, setAnswers] = useState({});
-  const [result, setResult] = useState(null);
+export default function LessonQuiz({ lessonId, questions = [] }: { lessonId: string; questions?: any[] }) {
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [result, setResult] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
 
   const sortedQuestions = useMemo(

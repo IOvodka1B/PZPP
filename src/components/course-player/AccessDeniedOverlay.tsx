@@ -1,6 +1,6 @@
 import { Lock } from "lucide-react";
 
-export default function AccessDeniedOverlay({ message }) {
+export default function AccessDeniedOverlay({ message }: { message?: string }) {
   return (
     <div className="flex min-h-[320px] items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 p-6">
       <div className="text-center">

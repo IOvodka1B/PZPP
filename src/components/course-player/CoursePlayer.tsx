@@ -2,7 +2,7 @@
 
 import ReactPlayer from "react-player";
 
-export default function CoursePlayer({ url, title, blocked = false }) {
+export default function CoursePlayer({ url, title, blocked = false }: { url?: string; title?: string; blocked?: boolean }) {
   if (!url) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
