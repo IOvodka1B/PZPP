@@ -188,6 +188,7 @@ export async function fetchGoogleCalendarEvents(userId, rangeStart, rangeEnd) {
     title: event.summary || "Bez tytułu",
     start: event?.start?.dateTime || event?.start?.date || null,
     end: event?.end?.dateTime || event?.end?.date || null,
+    createdAt: event.created || null,
     source: "google",
     externalUrl: event?.htmlLink || null,
   }));

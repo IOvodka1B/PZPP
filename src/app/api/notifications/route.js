@@ -21,6 +21,16 @@ export async function GET(request) {
   const limit = Number(url.searchParams.get("limit") || 20);
 
   try {
+    // Asynchronously trigger calendar sync for this user to check for new events.
+    // We do this without blocking the response so the bell updates quickly.
+    import("@/app/actions/meetingActions")
+      .then((m) => {
+        const start = new Date();
+        const end = new Date(start.getTime() + 14 * 24 * 60 * 60 * 1000);
+        return m.getUnifiedCalendarEvents(userId, start, end);
+      })
+      .catch((e) => console.error("Background calendar sync error:", e));
+
     const result = await listNotificationsForUser(userId, { limit });
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
@@ -60,7 +70,7 @@ export async function POST(request) {
       const eventId = typeof body?.eventId === "string" ? body.eventId : "";
       const title = typeof body?.title === "string" ? body.title.trim() : "";
       const source = typeof body?.source === "string" ? body.source.trim() : "";
-      const url = typeof body?.url === "string" ? body.url : null;
+      const eventUrl = typeof body?.url === "string" ? body.url : null;
 
       if (!eventId || !title) {
         return NextResponse.json({ success: false, error: "Missing eventId/title" }, { status: 400 });
@@ -82,7 +92,7 @@ export async function POST(request) {
         type: NOTIFICATION_TYPES.CALENDAR_EVENT_CREATED,
         title: source ? `Nowe wydarzenie (${source})` : "Nowe wydarzenie",
         body: title,
-        url,
+        url: eventUrl,
         entityId: eventId,
       });
 

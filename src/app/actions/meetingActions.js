@@ -85,6 +85,7 @@ function toUnifiedEvent(item) {
     end,
     source: item.source,
     externalUrl: item.externalUrl || null,
+    createdAt: item.createdAt || null,
   };
 }
 
@@ -127,6 +128,7 @@ async function fetchOutlookCalendarEvents(account, rangeStart, rangeEnd) {
           end: event?.end?.dateTime,
           source: "outlook",
           externalUrl: event?.webLink || null,
+          createdAt: event?.createdDateTime || null,
         })
       )
       .filter(Boolean);
@@ -192,6 +194,42 @@ export async function getUnifiedCalendarEvents(userId, startDate, endDate) {
         return [];
       })
       .filter(Boolean);
+
+    // Asynchronously create notifications for recently created external events
+    // to ensure users are notified even if they don't have the calendar open.
+    if (resolvedUserId) {
+      Promise.resolve().then(async () => {
+        try {
+          const recentEvents = externalEvents.filter((ev) => {
+            if (!ev.createdAt) return false;
+            return Date.now() - new Date(ev.createdAt).getTime() < 10 * 1000;
+          });
+
+          for (const ev of recentEvents) {
+            const exists = await prisma.notification.findFirst({
+              where: {
+                userId: resolvedUserId,
+                type: NOTIFICATION_TYPES.CALENDAR_EVENT_CREATED,
+                entityId: ev.id,
+              },
+              select: { id: true },
+            });
+            if (!exists) {
+              await createNotification({
+                userId: resolvedUserId,
+                type: NOTIFICATION_TYPES.CALENDAR_EVENT_CREATED,
+                title: ev.source ? `Nowe wydarzenie (${ev.source})` : "Nowe wydarzenie",
+                body: ev.title,
+                url: `/dashboard/calendar?eventId=${encodeURIComponent(ev.id)}`,
+                entityId: ev.id,
+              });
+            }
+          }
+        } catch (e) {
+          console.error("Background notification creation failed:", e);
+        }
+      });
+    }
 
     const localEvents = localMeetings
       .map((meeting) =>
@@ -358,4 +396,5 @@ export async function deleteMeeting(meetingId) {
     return { success: false, error: "Wystąpił błąd podczas usuwania." };
   }
 }
+
 
