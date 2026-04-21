@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth/next";
 import { revalidatePath } from "next/cache";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { fetchJiraIssuesForUser, getValidJiraAccessToken } from "@/lib/integrations/jiraClient";
 
 async function getCurrentUserIdOrThrow() {
   const session = await getServerSession(authOptions);
@@ -16,49 +17,17 @@ async function getCurrentUserIdOrThrow() {
   return userId;
 }
 
-function isTokenExpired(expiresAt) {
-  if (!expiresAt) return false;
-  return expiresAt <= Math.floor(Date.now() / 1000);
-}
-
-async function getAtlassianAccountOrThrow(userId) {
-  const account = await prisma.account.findFirst({
-    where: {
-      userId,
-      provider: "atlassian",
-    },
-    select: {
-      access_token: true,
-      expires_at: true,
-    },
-  });
-
-  if (!account?.access_token) {
-    throw new Error("Brak podłączonej integracji Atlassian.");
-  }
-
-  if (isTokenExpired(account.expires_at)) {
-    // TODO: Refresh Token Rotation:
-    // 1) Użyć refresh_token do odświeżenia access_token
-    // 2) Zapisać nowe tokeny w tabeli Account
-    // 3) Ponowić request do Jira API
-    throw new Error("Token Atlassian wygasł. Połącz integrację ponownie.");
-  }
-
-  return account;
-}
-
 export async function getJiraProjects() {
   try {
     const userId = await getCurrentUserIdOrThrow();
-    const account = await getAtlassianAccountOrThrow(userId);
+    const accessToken = await getValidJiraAccessToken(userId);
 
     const resourcesResponse = await fetch(
       "https://api.atlassian.com/oauth/token/accessible-resources",
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${account.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         cache: "no-store",
@@ -98,7 +67,7 @@ export async function getJiraProjects() {
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${account.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         cache: "no-store",
@@ -166,5 +135,57 @@ export async function saveJiraProjectSelection({ projectKey, projectName, cloudI
   } catch (error) {
     console.error("saveJiraProjectSelection:", error);
     return { success: false, message: "Nie udało się zapisać projektu Jira." };
+  }
+}
+
+export async function getJiraIssuesByProject(projectKey) {
+  try {
+    const userId = await getCurrentUserIdOrThrow();
+    const normalizedProjectKey =
+      typeof projectKey === "string" ? projectKey.trim().toUpperCase() : "";
+
+    if (!normalizedProjectKey) {
+      return { success: false, message: "Wybierz projekt Jira.", issues: [] };
+    }
+
+    const issues = await fetchJiraIssuesForUser({
+      userId,
+      jql: `project = ${normalizedProjectKey} ORDER BY updated DESC`,
+      maxResults: 20,
+    });
+
+    return { success: true, message: "Pobrano tickety Jira.", issues };
+  } catch (error) {
+    console.error("getJiraIssuesByProject:", error);
+    return { success: false, message: "Błąd pobierania ticketów Jira.", issues: [] };
+  }
+}
+
+export async function syncJiraNow() {
+  try {
+    const userId = await getCurrentUserIdOrThrow();
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { jiraSelectedProjectKey: true },
+    });
+
+    if (!user?.jiraSelectedProjectKey) {
+      return { success: false, message: "Najpierw wybierz projekt Jira.", syncedCount: 0 };
+    }
+
+    const result = await getJiraIssuesByProject(user.jiraSelectedProjectKey);
+    if (!result.success) {
+      return { success: false, message: result.message, syncedCount: 0 };
+    }
+
+    return {
+      success: true,
+      message: `Synchronizacja Jira zakończona. Pobrano ${result.issues.length} ticketów.`,
+      syncedCount: result.issues.length,
+      issues: result.issues,
+    };
+  } catch (error) {
+    console.error("syncJiraNow:", error);
+    return { success: false, message: "Błąd synchronizacji Jira.", syncedCount: 0, issues: [] };
   }
 }

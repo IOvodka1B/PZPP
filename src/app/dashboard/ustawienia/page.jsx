@@ -88,6 +88,13 @@ export default function SettingsPage() {
     jiraSelectedProjectKey: null,
     jiraSelectedProjectName: null,
     jiraSelectedCloudId: null,
+    googleLastSyncedAt: null,
+    googleCalendarLastSyncedAt: null,
+    googleContactsLastSyncedAt: null,
+    googleLastError: null,
+    googleEmail: null,
+    jiraLastSyncedAt: null,
+    jiraLastError: null,
   });
 
   const profileForm = useForm({
@@ -148,6 +155,13 @@ export default function SettingsPage() {
           jiraSelectedProjectKey: integrationsResult.data.jiraSelectedProjectKey || null,
           jiraSelectedProjectName: integrationsResult.data.jiraSelectedProjectName || null,
           jiraSelectedCloudId: integrationsResult.data.jiraSelectedCloudId || null,
+          googleLastSyncedAt: integrationsResult.data.googleLastSyncedAt || null,
+          googleCalendarLastSyncedAt: integrationsResult.data.googleCalendarLastSyncedAt || null,
+          googleContactsLastSyncedAt: integrationsResult.data.googleContactsLastSyncedAt || null,
+          googleLastError: integrationsResult.data.googleLastError || null,
+          googleEmail: integrationsResult.data.googleEmail || null,
+          jiraLastSyncedAt: integrationsResult.data.jiraLastSyncedAt || null,
+          jiraLastError: integrationsResult.data.jiraLastError || null,
         });
       } else {
         setIntegrationsData({
@@ -157,6 +171,13 @@ export default function SettingsPage() {
           jiraSelectedProjectKey: null,
           jiraSelectedProjectName: null,
           jiraSelectedCloudId: null,
+          googleLastSyncedAt: null,
+          googleCalendarLastSyncedAt: null,
+          googleContactsLastSyncedAt: null,
+          googleLastError: null,
+          googleEmail: null,
+          jiraLastSyncedAt: null,
+          jiraLastError: null,
         });
       }
       setIsInitialLoading(false);
@@ -415,6 +436,13 @@ export default function SettingsPage() {
             jiraProjectsError={integrationsData.jiraProjectsError}
             jiraSelectedProjectKey={integrationsData.jiraSelectedProjectKey}
             jiraSelectedCloudId={integrationsData.jiraSelectedCloudId}
+            googleLastSyncedAt={integrationsData.googleLastSyncedAt}
+            googleCalendarLastSyncedAt={integrationsData.googleCalendarLastSyncedAt}
+            googleContactsLastSyncedAt={integrationsData.googleContactsLastSyncedAt}
+            googleLastError={integrationsData.googleLastError}
+            googleEmail={integrationsData.googleEmail}
+            jiraLastSyncedAt={integrationsData.jiraLastSyncedAt}
+            jiraLastError={integrationsData.jiraLastError}
           />
         </TabsContent>
       </Tabs>
