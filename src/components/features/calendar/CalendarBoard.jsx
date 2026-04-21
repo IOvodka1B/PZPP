@@ -342,7 +342,7 @@ export default function CalendarBoard({ className }) {
 
   // Background refresh so external integrations (e.g. Google) appear automatically.
   useEffect(() => {
-    const intervalMs = 30_000;
+    const intervalMs = 10_000;
     let timer = null;
 
     const tick = () => {
