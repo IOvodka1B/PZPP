@@ -37,7 +37,7 @@ import CrmCustomMessage, {
  * Kreator widzi tylko swoje leady; admin — wszystkie; uczestnik — po emailu.
  * @param {string} leadId
  */
-export async function getLeadMessages(leadId) {
+export async function getLeadMessages(leadId, filters = {}) {
   try {
     if (!leadId || typeof leadId !== "string") {
       return null;
@@ -61,7 +61,23 @@ export async function getLeadMessages(leadId) {
       where: whereClause,
       include: {
         messages: {
+          where: {
+            ...(typeof filters?.teamId === "string" && filters.teamId.trim()
+              ? { teamId: filters.teamId.trim() }
+              : {}),
+            ...(filters?.privateOnly ? { teamId: null } : {}),
+            ...(typeof filters?.messageType === "string" && filters.messageType.trim()
+              ? { messageType: filters.messageType.trim().toUpperCase() }
+              : {}),
+            ...(filters?.includeInternalNotes === false
+              ? { NOT: { messageType: "INTERNAL_NOTE" } }
+              : {}),
+          },
           orderBy: { createdAt: "asc" },
+          include: {
+            team: { select: { id: true, name: true } },
+            assignedTo: { select: { id: true, name: true, email: true } },
+          },
         },
       },
     });
@@ -78,7 +94,7 @@ export async function getLeadMessages(leadId) {
 /**
  * Wysyła prawdziwego maila przez Nodemailer i zapisuje go w historii leada.
  */
-export async function sendEmailToLead(leadId, toEmail, subject, body) {
+export async function sendEmailToLead(leadId, toEmail, subject, body, options = {}) {
   try {
     if (!leadId || !toEmail || !body) {
       return { success: false, error: "Brakuje wymaganych danych do wysyłki." };
@@ -101,6 +117,15 @@ export async function sendEmailToLead(leadId, toEmail, subject, body) {
         body,
         type: "EMAIL",
         direction: "OUTBOUND",
+        messageType:
+          typeof options?.messageType === "string" && options.messageType.trim()
+            ? options.messageType.trim().toUpperCase()
+            : "EMAIL",
+        teamId: typeof options?.teamId === "string" ? options.teamId : null,
+        assignedToId:
+          typeof options?.assignedToId === "string" ? options.assignedToId : null,
+        ticketStatus:
+          typeof options?.ticketStatus === "string" ? options.ticketStatus : null,
       },
     });
 
@@ -163,7 +188,13 @@ const TEMPLATE_REGISTRY = {
  * @param {keyof typeof TEMPLATE_REGISTRY} templateName
  * @param {object} props
  */
-export async function sendTemplatedEmail(leadId, toEmail, templateName, props) {
+export async function sendTemplatedEmail(
+  leadId,
+  toEmail,
+  templateName,
+  props,
+  options = {}
+) {
   try {
     if (!leadId || !toEmail || !templateName) {
       return { success: false, error: "Brakuje wymaganych danych do wysyłki." };
@@ -198,6 +229,11 @@ export async function sendTemplatedEmail(leadId, toEmail, templateName, props) {
         ? text.replace(/\s+/g, " ").trim().slice(0, 300)
         : "[HTML email sent]";
 
+    const normalizedMessageType =
+      typeof options?.messageType === "string" && options.messageType.trim()
+        ? options.messageType.trim().toUpperCase()
+        : "EMAIL";
+
     const savedMessage = await prisma.message.create({
       data: {
         leadId,
@@ -206,6 +242,12 @@ export async function sendTemplatedEmail(leadId, toEmail, templateName, props) {
         body: preview,
         type: "EMAIL",
         direction: "OUTBOUND",
+        messageType: normalizedMessageType,
+        teamId: typeof options?.teamId === "string" ? options.teamId : null,
+        assignedToId:
+          typeof options?.assignedToId === "string" ? options.assignedToId : null,
+        ticketStatus:
+          typeof options?.ticketStatus === "string" ? options.ticketStatus : null,
       },
     });
 
@@ -234,7 +276,7 @@ export async function sendTemplatedEmail(leadId, toEmail, templateName, props) {
 /**
  * Symuluje wysyłkę SMS (nie wysyła fizycznie, tylko tworzy wpis w historii).
  */
-export async function simulateSMSToLead(leadId, phone, body) {
+export async function simulateSMSToLead(leadId, phone, body, options = {}) {
   try {
     if (!leadId || !body) {
       return { success: false, error: "Brakuje wymaganych danych dla SMS." };
@@ -250,6 +292,15 @@ export async function simulateSMSToLead(leadId, phone, body) {
         body,
         type: "SMS",
         direction: "OUTBOUND",
+        messageType:
+          typeof options?.messageType === "string" && options.messageType.trim()
+            ? options.messageType.trim().toUpperCase()
+            : "CHAT",
+        teamId: typeof options?.teamId === "string" ? options.teamId : null,
+        assignedToId:
+          typeof options?.assignedToId === "string" ? options.assignedToId : null,
+        ticketStatus:
+          typeof options?.ticketStatus === "string" ? options.ticketStatus : null,
       },
     });
 
@@ -263,5 +314,97 @@ export async function simulateSMSToLead(leadId, phone, body) {
   } catch (error) {
     console.error("Błąd podczas symulacji SMS:", error);
     return { success: false, error: "Nie udało się zapisać wiadomości SMS." };
+  }
+}
+
+/**
+ * Dodaje wewnętrzny komentarz do wątku leada.
+ * Komentarz nie jest wysyłany na zewnątrz i służy tylko zespołowi.
+ */
+export async function addInternalNote(leadId, body, options = {}) {
+  try {
+    if (!leadId || !body) {
+      return { success: false, error: "Brakuje danych dla komentarza wewnętrznego." };
+    }
+
+    const ownership = await requireLeadOwnership(prisma, leadId);
+    if (!ownership.ok) return { success: false, error: ownership.error };
+
+    const note = await prisma.message.create({
+      data: {
+        leadId,
+        subject:
+          typeof options?.subject === "string" && options.subject.trim()
+            ? options.subject.trim()
+            : "Komentarz wewnętrzny",
+        body,
+        type: "NOTE",
+        direction: "INTERNAL",
+        messageType: "INTERNAL_NOTE",
+        teamId: typeof options?.teamId === "string" ? options.teamId : null,
+        assignedToId:
+          typeof options?.assignedToId === "string" ? options.assignedToId : null,
+        ticketStatus:
+          typeof options?.ticketStatus === "string" ? options.ticketStatus : null,
+      },
+      include: {
+        team: { select: { id: true, name: true } },
+        assignedTo: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    revalidatePath(`/crm/lead/${leadId}`);
+    revalidatePath("/dashboard/skrzynka");
+    revalidatePath("/student/skrzynka");
+    return { success: true, data: note };
+  } catch (error) {
+    console.error("addInternalNote:", error);
+    return { success: false, error: "Nie udało się zapisać komentarza wewnętrznego." };
+  }
+}
+
+/**
+ * Przypisuje ownera konwersacji (globalnie lub w obrębie kanału zespołu).
+ */
+export async function assignConversationOwner(leadId, assignedToId, options = {}) {
+  try {
+    if (!leadId) return { success: false, error: "Brakuje leadId." };
+
+    const ownership = await requireLeadOwnership(prisma, leadId);
+    if (!ownership.ok) return { success: false, error: ownership.error };
+
+    const teamId = typeof options?.teamId === "string" ? options.teamId : null;
+    const ownerValue =
+      typeof assignedToId === "string" && assignedToId.trim() ? assignedToId : null;
+
+    await prisma.message.updateMany({
+      where: {
+        leadId,
+        ...(teamId ? { teamId } : {}),
+      },
+      data: {
+        assignedToId: ownerValue,
+      },
+    });
+
+    await prisma.message.create({
+      data: {
+        leadId,
+        teamId,
+        type: "SYSTEM",
+        direction: "INTERNAL",
+        subject: "Zmiana ownera",
+        body: ownerValue ? "Przypisano nowego ownera konwersacji." : "Usunięto ownera konwersacji.",
+        messageType: "SYSTEM",
+        assignedToId: ownerValue,
+      },
+    });
+
+    revalidatePath(`/crm/lead/${leadId}`);
+    revalidatePath("/dashboard/skrzynka");
+    return { success: true };
+  } catch (error) {
+    console.error("assignConversationOwner:", error);
+    return { success: false, error: "Nie udało się zaktualizować ownera." };
   }
 }
