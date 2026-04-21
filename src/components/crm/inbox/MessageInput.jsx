@@ -24,9 +24,14 @@ const TEMPLATE_OPTIONS = TEMPLATE_REGISTRY_KEYS.filter(
 );
 
 /**
- * @param {{ leadId: string; leadEmail: string; disabled?: boolean }} props
+ * @param {{ leadId: string; leadEmail: string; disabled?: boolean; teamId?: string | null }} props
  */
-export default function MessageInput({ leadId, leadEmail, disabled }) {
+export default function MessageInput({
+  leadId,
+  leadEmail,
+  disabled,
+  teamId = null,
+}) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const textareaRef = useRef(null);
@@ -59,6 +64,10 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
         {
           customSubject: manualSubject.trim() || "Wiadomość",
           content: manualText,
+        },
+        {
+          messageType: "EMAIL",
+          teamId,
         }
       );
       if (res.success) {
@@ -67,7 +76,7 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
           description: "Wiadomość e-mail została wysłana.",
         });
         setManualText("");
-        queryClient.invalidateQueries({ queryKey: ["lead-messages", leadId] });
+        queryClient.invalidateQueries({ queryKey: ["lead-messages"] });
 
         if (textareaRef.current) {
           textareaRef.current.style.height = "auto";
@@ -85,11 +94,16 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
   const sendTemplate = () => {
     if (!templateName || !leadId || !leadEmail) return;
     startTransition(async () => {
-      const res = await sendTemplatedEmail(leadId, leadEmail, templateName, {});
+      const res = await sendTemplatedEmail(
+        leadId,
+        leadEmail,
+        templateName,
+        {},
+        { messageType: "EMAIL", teamId }
+      );
       if (res.success) {
         toast({ title: "Wysłano", description: "Szablon został wysłany." });
-        // TUTAJ: Inwalidacja po sukcesie
-        queryClient.invalidateQueries({ queryKey: ["lead-messages", leadId] });
+        queryClient.invalidateQueries({ queryKey: ["lead-messages"] });
       } else {
         toast({
           variant: "destructive",
@@ -162,12 +176,7 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
               </SelectContent>
             </Select>
           </div>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={sendTemplate}
-            disabled={disabled || isPending}
-          >
+          <Button type="button" variant="secondary" onClick={sendTemplate} disabled={disabled || isPending}>
             {isPending ? <Loader2 className="size-4 animate-spin" /> : null}
             Wyślij szablon
           </Button>
