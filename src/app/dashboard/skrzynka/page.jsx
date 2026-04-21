@@ -1,6 +1,5 @@
 import { getLeads } from "@/app/actions/leadActions";
-import InboxContainer from "@/components/crm/inbox/InboxContainer";
-import { Suspense } from "react";
+import SkrzynkaPageBody from "./SkrzynkaPageBody";
 
 export default async function SkrzynkaPage() {
   const leads = await getLeads();
@@ -14,9 +13,11 @@ export default async function SkrzynkaPage() {
         </p>
       </div>
       <div className="flex min-h-0 flex-1 flex-col">
-        <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Wczytywanie skrzynki...</div>}>
-          <InboxContainer leads={leads} isStudentView={false} />
-        </Suspense>
+        {/*
+          Przełącznik widoku (Shadcn Tabs: Prywatne / Zespoły) jest w lewym panelu,
+          zaraz nad listą — komponent InboxSidebar.
+        */}
+        <SkrzynkaPageBody leads={leads} />
       </div>
     </section>
   );
