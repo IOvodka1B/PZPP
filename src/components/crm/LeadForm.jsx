@@ -14,10 +14,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DialogClose } from "@/components/ui/dialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LeadForm() {
   const formRef = useRef(null);
   const [status, setStatus] = useState("NEW");
+
+  const queryClient = useQueryClient();
 
   async function handleSubmit(formData) {
     const result = await createLead(formData);
@@ -25,6 +28,8 @@ export default function LeadForm() {
       alert("Lead zapisany bezpiecznie w bazie!");
       formRef.current.reset();
       setStatus("NEW");
+      queryClient.invalidateQueries(["leads"]);
+      queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
     } else {
       alert(result.error);
     }

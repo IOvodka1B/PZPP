@@ -33,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { useQueryClient } from "@tanstack/react-query";
 
 const eventStyleMap = {
   NOTE: {
@@ -186,7 +187,7 @@ export default function LeadProfileSheet({ isOpen, onClose, leadId }) {
     const fullName = `${profile.firstName || ""} ${profile.lastName || ""}`.trim();
     return { fullName, initials: getInitials(profile.firstName, profile.lastName) };
   }, [profile]);
-
+  const queryClient = useQueryClient();
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-full sm:max-w-3xl p-0">
@@ -222,6 +223,8 @@ export default function LeadProfileSheet({ isOpen, onClose, leadId }) {
                       if (!ok) return;
                       setIsDeletingLead(true);
                       const res = await deleteLead(leadId);
+                      queryClient.invalidateQueries(["leads"]);
+                      queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
                       setIsDeletingLead(false);
                       if (!res?.success) {
                         setError(res?.error || "Nie udało się usunąć leada.");

@@ -17,8 +17,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
-const TEMPLATE_OPTIONS = TEMPLATE_REGISTRY_KEYS.filter((k) => k !== "CrmCustomMessage");
+const TEMPLATE_OPTIONS = TEMPLATE_REGISTRY_KEYS.filter(
+  (k) => k !== "CrmCustomMessage"
+);
 
 /**
  * @param {{ leadId: string; leadEmail: string; disabled?: boolean }} props
@@ -41,7 +44,7 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
     setManualText(e.target.value);
     handleInput(e);
   };
-
+  const queryClient = useQueryClient();
   const sendManual = () => {
     const text = manualText.trim();
     if (!text || !leadId || !leadEmail) {
@@ -49,13 +52,23 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
       return;
     }
     startTransition(async () => {
-      const res = await sendTemplatedEmail(leadId, leadEmail, "CrmCustomMessage", {
-        customSubject: manualSubject.trim() || "Wiadomość",
-        content: manualText,
-      });
+      const res = await sendTemplatedEmail(
+        leadId,
+        leadEmail,
+        "CrmCustomMessage",
+        {
+          customSubject: manualSubject.trim() || "Wiadomość",
+          content: manualText,
+        }
+      );
       if (res.success) {
-        toast({ title: "Wysłano", description: "Wiadomość e-mail została wysłana." });
+        toast({
+          title: "Wysłano",
+          description: "Wiadomość e-mail została wysłana.",
+        });
         setManualText("");
+        queryClient.invalidateQueries({ queryKey: ["lead-messages", leadId] });
+
         if (textareaRef.current) {
           textareaRef.current.style.height = "auto";
         }
@@ -63,7 +76,7 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
         toast({
           variant: "destructive",
           title: "Błąd",
-          description: res.error || "Nie udało się wysłać.",
+          description: res.error,
         });
       }
     });
@@ -75,11 +88,13 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
       const res = await sendTemplatedEmail(leadId, leadEmail, templateName, {});
       if (res.success) {
         toast({ title: "Wysłano", description: "Szablon został wysłany." });
+        // TUTAJ: Inwalidacja po sukcesie
+        queryClient.invalidateQueries({ queryKey: ["lead-messages", leadId] });
       } else {
         toast({
           variant: "destructive",
           title: "Błąd",
-          description: res.error || "Nie udało się wysłać szablonu.",
+          description: res.error,
         });
       }
     });
@@ -117,7 +132,11 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
               className="min-h-[44px] max-h-[200px] resize-none overflow-y-auto field-sizing-fixed"
             />
           </div>
-          <Button type="button" onClick={sendManual} disabled={disabled || isPending}>
+          <Button
+            type="button"
+            onClick={sendManual}
+            disabled={disabled || isPending}
+          >
             {isPending ? <Loader2 className="size-4 animate-spin" /> : null}
             Wyślij e-mail
           </Button>
@@ -126,7 +145,11 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
         <TabsContent value="template" className="mt-0 space-y-3">
           <div className="space-y-2">
             <Label>Szablon</Label>
-            <Select value={templateName} onValueChange={setTemplateName} disabled={disabled || isPending}>
+            <Select
+              value={templateName}
+              onValueChange={setTemplateName}
+              disabled={disabled || isPending}
+            >
               <SelectTrigger className="max-w-md">
                 <SelectValue placeholder="Wybierz szablon" />
               </SelectTrigger>
@@ -139,7 +162,12 @@ export default function MessageInput({ leadId, leadEmail, disabled }) {
               </SelectContent>
             </Select>
           </div>
-          <Button type="button" variant="secondary" onClick={sendTemplate} disabled={disabled || isPending}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={sendTemplate}
+            disabled={disabled || isPending}
+          >
             {isPending ? <Loader2 className="size-4 animate-spin" /> : null}
             Wyślij szablon
           </Button>
