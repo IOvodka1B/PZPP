@@ -79,6 +79,8 @@ model User {
   automationRules         AutomationRule[]    @relation("AutomationOwner")
 
   notifications           Notification[]
+  teamMemberships         TeamMember[]
+  assignedMessages        Message[]           @relation("MessageAssignee")
 }
 
 model Account {
@@ -393,17 +395,45 @@ model ABVariant {
 
 //MODUŁ C: KOMUNIKACJA (Email, SMS)
 
+model Team {
+  id        String       @id @default(cuid())
+  name      String
+  createdAt DateTime     @default(now())
+  members   TeamMember[]
+  messages  Message[]
+}
+
+model TeamMember {
+  teamId   String
+  userId   String
+  joinedAt DateTime @default(now())
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@index([userId])
+}
+
 model Message {
-  id        String   @id @default(cuid())
-  subject   String?
-  body      String   @db.Text
-  type      String //np. 'EMAIL'
-  direction String //'INBOUND' (od leada), 'OUTBOUND' (do leada)
-  leadId    String
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  subject      String?
+  body         String   @db.Text
+  type         String //np. 'EMAIL'
+  direction    String //'INBOUND' (od leada), 'OUTBOUND' (do leada)
+  messageType  String?  @default("CHAT") // CHAT, EMAIL, SYSTEM, INTERNAL_NOTE
+  teamId       String?
+  team         Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  assignedToId String?
+  assignedTo   User?    @relation("MessageAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  ticketStatus String?  @default("OPEN")
+  leadId       String
+  lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
 
   @@index([leadId])
+  @@index([teamId])
+  @@index([assignedToId])
+  @@index([messageType])
 }
 
 model Task {
