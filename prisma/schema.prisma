@@ -38,6 +38,7 @@ enum NotificationType {
   TASK_CREATED
   MEETING_CREATED
   CALENDAR_EVENT_CREATED
+  DOCUMENT_SIGNED
 }
 
 model User {
@@ -716,6 +717,7 @@ model Document {
   id        String    @id @default(cuid())
   title     String
   fileUrl   String // Ścieżka do zapisanego pliku PDF/HTML
+  requiresSignature Boolean @default(false)
   isSigned  Boolean   @default(false)
   signature String?   @db.Text // Plik graficzny z react-signature-canvas (base64)
   signedAt  DateTime?
