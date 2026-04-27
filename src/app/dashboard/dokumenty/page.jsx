@@ -42,19 +42,28 @@ export default async function DokumentyPage() {
             >
               <div className="min-w-0">
                 <div className="truncate font-medium">{d.title}</div>
-                <div className="truncate text-xs text-muted-foreground">{d.fileUrl}</div>
+                <div className="truncate text-xs text-muted-foreground">
+                  {String(d.fileUrl || "").startsWith("documents/")
+                    ? "Plik prywatny"
+                    : d.fileUrl}
+                </div>
               </div>
               <div className="truncate text-muted-foreground">{formatLeadName(d.lead)}</div>
               <div className="text-right text-xs">
                 <span
                   className={[
                     "inline-flex items-center rounded-full px-2 py-1 font-semibold",
-                    d.isSigned
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "bg-amber-50 text-amber-700",
+                    d.requiresSignature
+                      ? d.isSigned
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-amber-50 text-amber-700"
+                      : "bg-slate-50 text-slate-700",
+                    d.requiresSignature
+                      ? ""
+                      : "",
                   ].join(" ")}
                 >
-                  {d.isSigned ? "Podpisany" : "Do podpisu"}
+                  {d.requiresSignature ? (d.isSigned ? "Podpisany" : "Do podpisu") : "Bez podpisu"}
                 </span>
               </div>
             </div>
@@ -70,4 +79,3 @@ export default async function DokumentyPage() {
     </section>
   );
 }
-
