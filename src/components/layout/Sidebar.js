@@ -45,6 +45,7 @@ const NAV_ITEMS = [
 const STUDENT_NAV_ITEMS = [
   { href: '/student', label: 'Wszystkie kursy', icon: IdCard },
   { href: '/student/skrzynka', label: 'Skrzynka', icon: Mail },
+  { href: '/student/pliki', label: 'Moje pliki', icon: Files },
   { href: '/student/profil', label: 'Moje konto', icon: User },
 ]
 
