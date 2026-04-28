@@ -17,7 +17,7 @@ export default function Footer() {
         </div>
         
         <p className="text-sm text-muted-foreground text-center">
-          Wykonano przez Wódeczka. Wszelkie prawa zastrzeżone 2026
+          Wszelkie prawa zastrzeżone 2026©
         </p>
       </div>
     </footer>

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Features() {
   return (
     <section id="features" className="w-full py-16 md:py-24">
@@ -12,7 +14,16 @@ export default function Features() {
             </p>
           </div>
           <div className="order-1 lg:order-2">
-            <div className="aspect-[4/3] w-full rounded-2xl bg-primary/20 border border-primary/10 shadow-sm" />
+            <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 shadow-sm">
+              <Image
+                src="/landing/dashboard.png"
+                alt="Podgląd dashboardu CRM"
+                fill
+                sizes="(min-width: 1024px) 520px, 100vw"
+                className="object-cover object-top-left"
+                priority
+              />
+            </div>
           </div>
         </div>
 
@@ -26,7 +37,15 @@ export default function Features() {
             </p>
           </div>
           <div className="order-1">
-            <div className="aspect-[4/3] w-full rounded-2xl bg-primary/20 border border-primary/10 shadow-sm" />
+            <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 shadow-sm">
+              <Image
+                src="/landing/kanban.png"
+                alt="Podgląd tablicy Kanban"
+                fill
+                sizes="(min-width: 1024px) 520px, 100vw"
+                className="object-cover object-top-left"
+              />
+            </div>
           </div>
         </div>
       </div>
