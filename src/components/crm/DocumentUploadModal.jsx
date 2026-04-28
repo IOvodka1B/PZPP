@@ -5,6 +5,7 @@ import { uploadDocument } from "@/app/actions/documentActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -30,18 +31,22 @@ function formatLeadLabel(lead) {
 export default function DocumentUploadModal({ leads = [] }) {
   const [open, setOpen] = useState(false);
   const [leadId, setLeadId] = useState("");
+  const [requiresSignature, setRequiresSignature] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(event) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const formEl = event.currentTarget;
+    const formData = new FormData(formEl);
     formData.set("leadId", leadId);
+    formData.set("requiresSignature", requiresSignature ? "true" : "false");
 
     startTransition(async () => {
       const result = await uploadDocument(formData);
       if (result?.success) {
-        event.currentTarget.reset();
+        formEl?.reset?.();
         setLeadId("");
+        setRequiresSignature(true);
         setOpen(false);
       } else if (result?.error) {
         alert(result.error);
@@ -71,6 +76,21 @@ export default function DocumentUploadModal({ leads = [] }) {
           <div className="space-y-2">
             <Label htmlFor="file">Plik</Label>
             <Input id="file" name="file" type="file" accept=".pdf,.html" required />
+          </div>
+
+          <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/20 p-3">
+            <Checkbox
+              id="requiresSignature"
+              checked={requiresSignature}
+              onCheckedChange={(v) => setRequiresSignature(Boolean(v))}
+              disabled={isPending}
+            />
+            <div className="grid gap-1">
+              <Label htmlFor="requiresSignature">Wymaga podpisu</Label>
+              <p className="text-xs text-muted-foreground">
+                Jeśli włączone, uczeń zobaczy pole podpisu (tylko PDF).
+              </p>
+            </div>
           </div>
 
           <div className="space-y-2">

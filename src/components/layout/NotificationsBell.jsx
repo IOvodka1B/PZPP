@@ -30,6 +30,7 @@ export default function NotificationsBell({ className }) {
   const [items, setItems] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [isMarkingAll, setIsMarkingAll] = useState(false);
   const lastSeenIdRef = useRef(null);
 
   const topUnread = useMemo(() => Math.min(99, unreadCount), [unreadCount]);
@@ -71,12 +72,15 @@ export default function NotificationsBell({ className }) {
   }
 
   async function markAllRead() {
+    if (isMarkingAll) return;
+    setIsMarkingAll(true);
     await fetch("/api/notifications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "markAllRead" }),
     }).catch(() => null);
     await fetchNotifications({ showToasts: false });
+    setIsMarkingAll(false);
   }
 
   useEffect(() => {
@@ -99,13 +103,8 @@ export default function NotificationsBell({ className }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    // soft mark-as-read when user opens the dropdown
-    if (unreadCount > 0) {
-      markAllRead().catch(() => null);
-    }
-  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Intentionally do NOT auto-mark-as-read on open.
+  // User should be able to open the list without clearing unread state.
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -138,9 +137,10 @@ export default function NotificationsBell({ className }) {
               e.stopPropagation();
               markAllRead().catch(() => null);
             }}
+            disabled={isMarkingAll || unreadCount < 1}
           >
             <CheckCheck className="mr-1 size-4" />
-            Oznacz jako przeczytane
+            {isMarkingAll ? "Oznaczanie..." : "Oznacz wszystkie jako przeczytane"}
           </Button>
         </div>
         <DropdownMenuSeparator className="my-0" />
