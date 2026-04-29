@@ -5,8 +5,17 @@ import { prisma } from "@/lib/prisma";
 import { requireStudentOrAdmin, isAdminRole } from "@/lib/rbac";
 import { calculateCourseProgress } from "@/lib/course-progress";
 import { upsertLessonCompletionCompat } from "@/lib/lesson-completion-compat";
+import { sendCertificateEmail } from "@/lib/mail";
 
 const PASSING_THRESHOLD = 80;
+
+function generateCertificateNumber(courseId, userId) {
+  const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const coursePart = String(courseId).slice(-6).toUpperCase();
+  const userPart = String(userId).slice(-6).toUpperCase();
+  const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `CERT-${datePart}-${coursePart}-${userPart}-${randomPart}`;
+}
 
 function normalizeText(value) {
   return String(value ?? "").trim().toLowerCase();
@@ -158,7 +167,7 @@ export async function submitLessonQuiz({ lessonId, answers }) {
         });
       }
 
-      await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx) => {
         const completedLessons = await tx.lessonCompletion.count({
           where: { enrollmentId: enrollment.id },
         });
@@ -170,19 +179,56 @@ export async function submitLessonQuiz({ lessonId, answers }) {
         const progress = calculateCourseProgress(completedLessons, totalLessons);
         await tx.enrollment.update({ where: { id: enrollment.id }, data: { progress } });
 
-        if (quizLessonIds.length > 0 && passedQuizzesCount === quizLessonIds.length) {
-          const certificateTitle = `Certyfikat ukończenia: ${course?.title ?? "Kurs"}`;
-          const existingCertificate = await tx.certificate.findFirst({
-            where: { userId: auth.userId, title: certificateTitle },
-            select: { id: true },
+        let certificate = await tx.certificate.findUnique({
+          where: {
+            userId_courseId: {
+              userId: auth.userId,
+              courseId: lesson.module.courseId,
+            },
+          },
+          select: {
+            id: true,
+            certificateNumber: true,
+            issueDate: true,
+          },
+        });
+        let certificateCreated = false;
+
+        if (quizLessonIds.length > 0 && passedQuizzesCount === quizLessonIds.length && !certificate) {
+          certificate = await tx.certificate.create({
+            data: {
+              userId: auth.userId,
+              courseId: lesson.module.courseId,
+              certificateNumber: generateCertificateNumber(lesson.module.courseId, auth.userId),
+            },
+            select: {
+              id: true,
+              certificateNumber: true,
+              issueDate: true,
+            },
           });
-          if (!existingCertificate) {
-            await tx.certificate.create({
-              data: { userId: auth.userId, title: certificateTitle },
-            });
-          }
+          certificateCreated = true;
         }
+
+        return { certificate, certificateCreated };
       });
+
+      if (result?.certificateCreated) {
+        const user = await prisma.user.findUnique({
+          where: { id: auth.userId },
+          select: { email: true, name: true },
+        });
+
+        if (user?.email && result.certificate) {
+          await sendCertificateEmail({
+            to: user.email,
+            studentName: user.name || user.email,
+            courseName: course?.title ?? "Kurs",
+            issueDate: result.certificate.issueDate,
+            certificateNumber: result.certificate.certificateNumber,
+          });
+        }
+      }
     }
 
     revalidatePath(`/student/kurs/${lesson.module.courseId}`);

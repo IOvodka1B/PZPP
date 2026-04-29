@@ -6,6 +6,15 @@ import { requireCreator, requireUser, isAdminRole } from "@/lib/rbac";
 import { calculateCourseProgress } from "@/lib/course-progress";
 import { findNextLessonId, getOrderedCourseLessons } from "@/lib/course-navigation";
 import { upsertLessonCompletionCompat } from "@/lib/lesson-completion-compat";
+import { sendCertificateEmail } from "@/lib/mail";
+
+function generateCertificateNumber(courseId, userId) {
+  const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const coursePart = String(courseId).slice(-6).toUpperCase();
+  const userPart = String(userId).slice(-6).toUpperCase();
+  const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `CERT-${datePart}-${coursePart}-${userPart}-${randomPart}`;
+}
 
 async function requireCourseOwner(courseId, auth) {
   if (isAdminRole(auth.role)) return { ok: true };
@@ -521,18 +530,71 @@ export async function deleteLesson(lessonId) {
 
 export async function getStudentCertificateProgress(courseId) {
   try {
-    if (!courseId || typeof courseId !== "string") {
-      return { success: true, shouldRender: false };
-    }
-
     const auth = await requireUser();
     if (!auth.ok || !auth.userId) {
       return { success: true, shouldRender: false };
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: auth.userId },
+      select: { name: true, email: true },
+    });
+
+    if (!courseId || typeof courseId !== "string") {
+      const latestCertificate = await prisma.certificate.findFirst({
+        where: { userId: auth.userId },
+        orderBy: { issueDate: "desc" },
+        select: {
+          id: true,
+          certificateNumber: true,
+          issueDate: true,
+          course: { select: { title: true } },
+        },
+      });
+
+      if (latestCertificate) {
+        return {
+          success: true,
+          shouldRender: true,
+          progress: 100,
+          completedLessons: 0,
+          totalLessons: 0,
+          isCompleted: true,
+          certificate: {
+            id: latestCertificate.id,
+            certificateNumber: latestCertificate.certificateNumber,
+            issueDate: latestCertificate.issueDate,
+          },
+          courseTitle: latestCertificate.course?.title || "Kurs",
+          studentName: user?.name || user?.email || "Uczestnik kursu",
+        };
+      }
+
+      const mostAdvancedEnrollment = await prisma.enrollment.findFirst({
+        where: { userId: auth.userId },
+        orderBy: { progress: "desc" },
+        select: {
+          progress: true,
+          course: { select: { title: true } },
+        },
+      });
+
+      return {
+        success: true,
+        shouldRender: true,
+        progress: mostAdvancedEnrollment?.progress ?? 0,
+        completedLessons: 0,
+        totalLessons: 0,
+        isCompleted: false,
+        certificate: null,
+        courseTitle: mostAdvancedEnrollment?.course?.title || "",
+        studentName: user?.name || user?.email || "Uczestnik kursu",
+      };
+    }
+
     const enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId: auth.userId, courseId } },
-      select: { id: true },
+      select: { id: true, progress: true },
     });
 
     if (!enrollment) {
@@ -567,12 +629,19 @@ export async function getStudentCertificateProgress(courseId) {
     });
     const progress = calculateCourseProgress(completedLessons, totalLessons);
 
-    const certificateTitle = `Certyfikat ukończenia: ${course.title}`;
-    const hasCertificateModel = Boolean(certificateTitle);
-
-    if (!hasCertificateModel) {
-      return { success: true, shouldRender: false };
-    }
+    const certificate = await prisma.certificate.findUnique({
+      where: {
+        userId_courseId: {
+          userId: auth.userId,
+          courseId,
+        },
+      },
+      select: {
+        id: true,
+        certificateNumber: true,
+        issueDate: true,
+      },
+    });
 
     return {
       success: true,
@@ -581,6 +650,9 @@ export async function getStudentCertificateProgress(courseId) {
       completedLessons,
       totalLessons,
       isCompleted: progress === 100,
+      certificate,
+      courseTitle: course.title,
+      studentName: user?.name || user?.email || "Uczestnik kursu",
     };
   } catch (error) {
     console.error("getStudentCertificateProgress:", error);
@@ -597,7 +669,7 @@ export async function completeLessonAndProceed({ courseId, lessonId }) {
       return { success: false, error: "Brak wymaganych danych lekcji lub kursu." };
     }
 
-    const [courseData, enrollment] = await Promise.all([
+    const [courseData, enrollment, user] = await Promise.all([
       prisma.course.findUnique({
         where: { id: courseId },
         select: {
@@ -619,6 +691,10 @@ export async function completeLessonAndProceed({ courseId, lessonId }) {
       prisma.enrollment.findUnique({
         where: { userId_courseId: { userId, courseId } },
         select: { id: true },
+      }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true },
       }),
     ]);
 
@@ -649,28 +725,47 @@ export async function completeLessonAndProceed({ courseId, lessonId }) {
         data: { progress },
       });
 
-      if (progress === 100) {
-        const certificateTitle = `Certyfikat ukończenia: ${courseData.title}`;
-        const existingCertificate = await tx.certificate.findFirst({
-          where: { userId, title: certificateTitle },
-          select: { id: true },
-        });
+      let certificate = await tx.certificate.findUnique({
+        where: { userId_courseId: { userId, courseId } },
+        select: {
+          id: true,
+          certificateNumber: true,
+          issueDate: true,
+        },
+      });
+      let certificateCreated = false;
 
-        if (!existingCertificate) {
-          await tx.certificate.create({
-            data: {
-              userId,
-              title: certificateTitle,
-            },
-          });
-        }
+      if (progress === 100 && !certificate) {
+        certificate = await tx.certificate.create({
+          data: {
+            userId,
+            courseId,
+            certificateNumber: generateCertificateNumber(courseId, userId),
+          },
+          select: {
+            id: true,
+            certificateNumber: true,
+            issueDate: true,
+          },
+        });
+        certificateCreated = true;
       }
 
-      return { progress };
+      return { progress, certificate, certificateCreated };
     });
 
     revalidatePath(`/student/kurs/${courseId}`);
     revalidatePath("/student");
+
+    if (result.certificateCreated && result.certificate && user?.email) {
+      await sendCertificateEmail({
+        to: user.email,
+        studentName: user.name || user.email,
+        courseName: courseData.title,
+        issueDate: result.certificate.issueDate,
+        certificateNumber: result.certificate.certificateNumber,
+      });
+    }
 
     if (nextLessonId) {
       return {
