@@ -164,6 +164,17 @@ function toUnifiedEvent(item) {
   };
 }
 
+function getExternalProviderErrorLabel(reason) {
+  const message = reason instanceof Error ? reason.message : String(reason || "");
+  if (message.includes("Google refresh token flow failed")) {
+    return "Google token wygasl lub zostal cofniety. Polacz integracje ponownie.";
+  }
+  if (message.includes("Brak refresh token")) {
+    return "Google integration wymaga ponownego polaczenia (brak refresh token).";
+  }
+  return message;
+}
+
 async function fetchOutlookCalendarEvents(account, rangeStart, rangeEnd) {
   try {
     if (!account?.access_token) return [];
@@ -269,10 +280,7 @@ export async function getUnifiedCalendarEvents(
     const externalEvents = externalResults
       .flatMap((result) => {
         if (result.status === "fulfilled") return result.value || [];
-        console.error(
-          "getUnifiedCalendarEvents external provider error:",
-          result.reason
-        );
+        console.warn("getUnifiedCalendarEvents external provider:", getExternalProviderErrorLabel(result.reason));
         return [];
       })
       .filter(Boolean);
