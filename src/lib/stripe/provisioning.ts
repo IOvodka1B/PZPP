@@ -25,8 +25,23 @@ export async function provisionPaidCheckout(params: {
   customerName?: string | null;
   amountTotal?: number | null;
   platformUrl: string;
+  abTestId?: string | null;
+  abVariantId?: string | null;
+  abVisitorId?: string | null;
+  landingPageId?: string | null;
 }) {
-  const { stripeSessionId, courseId, customerEmail, customerName, amountTotal, platformUrl } = params;
+  const {
+    stripeSessionId,
+    courseId,
+    customerEmail,
+    customerName,
+    amountTotal,
+    platformUrl,
+    abTestId,
+    abVariantId,
+    abVisitorId,
+    landingPageId,
+  } = params;
 
   const result = await prisma.$transaction(async (tx: any) => {
     const course = await tx.course.findUnique({
@@ -66,9 +81,19 @@ export async function provisionPaidCheckout(params: {
 
     const order = await tx.order.findUnique({
       where: { stripeSessionId },
-      select: { stripeSessionId: true, status: true, userId: true, courseId: true },
+      select: {
+        stripeSessionId: true,
+        status: true,
+        userId: true,
+        courseId: true,
+        abTestId: true,
+        abVariantId: true,
+        abVisitorId: true,
+        landingPageId: true,
+      },
     });
 
+    let shouldIncrementPurchase = false;
     if (!order) {
       await tx.order.create({
         data: {
@@ -77,18 +102,42 @@ export async function provisionPaidCheckout(params: {
           status: "COMPLETED",
           userId: user.id,
           courseId: course.id,
+          abTestId: abTestId || null,
+          abVariantId: abVariantId || null,
+          abVisitorId: abVisitorId || null,
+          landingPageId: landingPageId || null,
         },
       });
+      shouldIncrementPurchase = true;
     } else if (order.status !== "COMPLETED") {
       await tx.order.update({
         where: { stripeSessionId },
-        data: { status: "COMPLETED", userId: order.userId ?? user.id },
+        data: {
+          status: "COMPLETED",
+          userId: order.userId ?? user.id,
+          abTestId: order.abTestId ?? abTestId ?? null,
+          abVariantId: order.abVariantId ?? abVariantId ?? null,
+          abVisitorId: order.abVisitorId ?? abVisitorId ?? null,
+          landingPageId: order.landingPageId ?? landingPageId ?? null,
+        },
       });
+      shouldIncrementPurchase = true;
     } else if (!order.userId) {
       await tx.order.update({
         where: { stripeSessionId },
         data: { userId: user.id },
       });
+    }
+
+    if (shouldIncrementPurchase) {
+      const variantIdForPurchase = order?.abVariantId || abVariantId || null;
+      if (variantIdForPurchase) {
+        const variantDelegate = tx.aBVariant ?? tx.abVariant;
+        await variantDelegate.update({
+          where: { id: variantIdForPurchase },
+          data: { purchases: { increment: 1 } },
+        });
+      }
     }
 
     const existingEnrollment = await tx.enrollment.findUnique({

@@ -242,6 +242,21 @@ enum ABTestStatus {
   COMPLETED
 }
 
+enum ABTestTargetType {
+  FUNNEL_STEP
+  COURSE_SALES_PAGE
+}
+
+enum ABWinnerMetric {
+  CHECKOUT_START
+  PURCHASE
+}
+
+enum LandingPagePurpose {
+  GENERAL
+  COURSE_SALES
+}
+
 enum DealStage {
   DISCOVERY
   PROPOSAL
@@ -323,15 +338,21 @@ model LandingPage {
   cssData   String?  @db.Text
   isActive  Boolean  @default(false)
   isPublic  Boolean  @default(false)
+  purpose   LandingPagePurpose @default(GENERAL)
   authorId  String?
   author    User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   variants ABVariant[]
   steps    FunnelStep[]
+  orders   Order[]
 
   @@index([authorId])
+  @@index([courseId])
+  @@index([purpose])
 }
 
 model Funnel {
@@ -375,19 +396,28 @@ model FunnelStep {
 
 model ABTest {
   id           String       @id @default(cuid())
-  funnelStepId String
+  funnelStepId String?
+  targetType   ABTestTargetType @default(FUNNEL_STEP)
+  courseId     String?
   name         String
   status       ABTestStatus @default(DRAFT)
+  winnerMetric ABWinnerMetric @default(PURCHASE)
+  winnerVariantId String?
   startsAt     DateTime?
   endsAt       DateTime?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  funnelStep FunnelStep  @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+  funnelStep FunnelStep?  @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+  course    Course?      @relation(fields: [courseId], references: [id], onDelete: SetNull)
   variants   ABVariant[]
+  orders    Order[]
+  winnerVariant ABVariant? @relation("ABTestWinner", fields: [winnerVariantId], references: [id], onDelete: SetNull)
 
   @@index([funnelStepId])
+  @@index([courseId])
   @@index([status])
+  @@index([targetType])
 }
 
 model ABVariant {
@@ -397,12 +427,15 @@ model ABVariant {
   name          String
   trafficWeight Int      @default(50)
   views         Int      @default(0)
-  conversions   Int      @default(0)
+  checkoutStarts Int     @default(0)
+  purchases     Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   abTest      ABTest      @relation(fields: [abTestId], references: [id], onDelete: Cascade)
   landingPage LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+  winningForTests ABTest[] @relation("ABTestWinner")
+  orders      Order[]
 
   @@unique([abTestId, name])
   @@index([abTestId])
@@ -556,6 +589,8 @@ model Course {
   enrollments Enrollment[]
   orders      Order[]
   certificates Certificate[]
+  landingPages LandingPage[]
+  abTests     ABTest[]
 
   @@index([authorId])
 }
@@ -570,6 +605,13 @@ model Order {
   user     User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId String
   course   Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  landingPageId String?
+  landingPage LandingPage? @relation(fields: [landingPageId], references: [id], onDelete: SetNull)
+  abTestId String?
+  abTest   ABTest? @relation(fields: [abTestId], references: [id], onDelete: SetNull)
+  abVariantId String?
+  abVariant ABVariant? @relation(fields: [abVariantId], references: [id], onDelete: SetNull)
+  abVisitorId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -577,6 +619,9 @@ model Order {
   @@index([userId])
   @@index([courseId])
   @@index([status])
+  @@index([abTestId])
+  @@index([abVariantId])
+  @@index([landingPageId])
 }
 
 model Module {

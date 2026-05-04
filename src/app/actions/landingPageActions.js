@@ -314,12 +314,14 @@ export async function getLandingPageBySlug(slug) {
     const page = await prisma.landingPage.findUnique({
       where: { slug: normalized },
       select: {
+        id: true,
         title: true,
         slug: true,
         htmlData: true,
         cssData: true,
         isActive: true,
         isPublic: true,
+        courseId: true,
         authorId: true,
         updatedAt: true,
       },
