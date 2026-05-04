@@ -37,6 +37,10 @@ export async function POST(req: Request) {
       const stripeSessionId = session.id;
       const courseId = session.metadata?.courseId ?? null;
       const metadataUserId = session.metadata?.userId ?? null;
+      const abTestId = session.metadata?.abTestId || null;
+      const abVariantId = session.metadata?.abVariantId || null;
+      const abVisitorId = session.metadata?.abVisitorId || null;
+      const landingPageId = session.metadata?.landingPageId || null;
       const customerEmail =
         session.customer_details?.email ||
         (typeof session.customer_email === "string" ? session.customer_email : null) ||
@@ -47,6 +51,8 @@ export async function POST(req: Request) {
         stripeSessionId,
         courseId,
         metadataUserId,
+        abTestId,
+        abVariantId,
         customerEmail,
         customerName,
         paymentStatus: session.payment_status,
@@ -76,6 +82,10 @@ export async function POST(req: Request) {
         customerName,
         amountTotal: session.amount_total,
         platformUrl,
+        abTestId,
+        abVariantId,
+        abVisitorId,
+        landingPageId,
       });
 
       console.log("stripe webhook: provisioning done", {
